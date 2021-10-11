@@ -1,5 +1,6 @@
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        FloorPlan floorPlan = new FloorPlan(3, 3);
+        floorPlan.print();
     }
 }
