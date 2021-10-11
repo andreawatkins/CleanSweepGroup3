@@ -71,7 +71,7 @@ public class FloorPlan {
             }
         }
 
-        var lastRow = floorLayout.get(floorLayout.size() - 1); // last row
+        List<FloorCell> lastRow = floorLayout.get(floorLayout.size() - 1); // last row
 
         System.out.println();
 
