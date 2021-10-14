@@ -14,11 +14,11 @@ public class CleanSweep {
         return battery < 10;
     }
 
-    public void suckUpDirt() {
+    public String suckUpDirt() {
         while (currentLocation.dirtAmount > 0) {
             currentLocation.dirtAmount --;
         }
-        return;
+        return "All Clean!";
 
     }
 
