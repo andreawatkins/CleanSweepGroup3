@@ -2,6 +2,7 @@ public class CleanSweep {
     private  int battery;
     private  int currCapacity;
     private  int totalCapacity;
+    private FloorCell currentLocation;
 
     public CleanSweep(int battery, int currCapacity, int totalCapacity) {
         this.battery = battery;
@@ -9,6 +10,16 @@ public class CleanSweep {
         this.totalCapacity = totalCapacity;
     }
 
+    public boolean needToCharge () {
+        return battery < 10;
+    }
 
+    public void suckUpDirt() {
+        while (currentLocation.dirtAmount > 0) {
+            currentLocation.dirtAmount --;
+        }
+        return;
+
+    }
 
 }
