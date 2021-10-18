@@ -1,5 +1,8 @@
+import java.util.List;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        List<Direction> directions;
         FloorPlan floorPlan = new FloorPlan(3, 3);
         floorPlan.print();
 
@@ -8,8 +11,14 @@ public class Main {
 
         sensor.print();
 
-        CleanSweep cs = new CleanSweep(250.0, 60, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0) );
-        cs.suckUpDirt();
-        System.out.println(cs.useBattery());
+        CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0) );
+        /*directions = sensor.getTraversableDirections(startingLocation);
+        int i = 0;
+        for (Direction d: directions) {
+            cs.move(directions.get(i));
+            i++;
+            }*/
+        cs.zigZag();
+        }
     }
-}
+
