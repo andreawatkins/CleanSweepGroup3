@@ -7,5 +7,9 @@ public class Main {
         SensorSimulator sensor = new SensorSimulator(floorPlan, startingLocation);
 
         sensor.print();
+
+        CleanSweep cs = new CleanSweep(250.0, 60, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0) );
+        cs.suckUpDirt();
+        System.out.println(cs.useBattery());
     }
 }
