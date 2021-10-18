@@ -11,14 +11,14 @@ public class Main {
 
         sensor.print();
 
-        CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0) );
+        CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0));
         /*directions = sensor.getTraversableDirections(startingLocation);
         int i = 0;
         for (Direction d: directions) {
             cs.move(directions.get(i));
             i++;
             }*/
-        cs.zigZag();
-        }
+        cs.turnOn();
     }
+}
 

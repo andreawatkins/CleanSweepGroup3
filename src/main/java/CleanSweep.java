@@ -1,9 +1,6 @@
 import static java.lang.Thread.sleep;
 
 public class CleanSweep {
-    //this class should have an instance of sensor simulator.
-    //sensor simulator should check the current floor cell for details like surface type,
-    //dirt level, whether there are walls to N, S, E, W, etc.) via some method like "report"
     private double battery;
     private double currCapacity;
     private double totalCapacity = 50.0;
@@ -25,7 +22,6 @@ public class CleanSweep {
     }
 
     public CleanSweep getInstance() {
-        //singleton for the CleanSweep - need to set some vars private later
         if (cleanSweep == null) {
             synchronized (CleanSweep.class) {
                 if (cleanSweep == null) {
@@ -49,9 +45,7 @@ public class CleanSweep {
 
         if (previousLocation == currentLocation) {
             battery = battery - batteryDec;
-        }
-
-        else {
+        } else {
             if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
                 battery = battery - ((batteryDec + 2) / 2);
             if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
@@ -66,10 +60,12 @@ public class CleanSweep {
                 battery = battery - ((batteryDec + 2) / 2);
 
 
-
         }
-        if (needToCharge()) {System.out.println(this.currentState); return battery;}
-        else System.out.println("Battery Percent: " + (battery/250)*100 + "%" ); return battery;
+        if (needToCharge()) {
+            System.out.println(this.currentState);
+            return battery;
+        } else System.out.println("Battery Percent: " + (battery / 250) * 100 + "%");
+        return battery;
 
     }
 
@@ -86,18 +82,15 @@ public class CleanSweep {
         while (currentLocation.dirtAmount > 0) {
             System.out.println("Cleaning... " + currentLocation.dirtAmount + " units of dirt left");
             currentLocation.dirtAmount--;
-            currCapacity ++;
+            currCapacity++;
             sleep(1000);
-
-
-
 
 
         }
 
 
         System.out.println("FloorCell is Clean!");
-        System.out.println("Capacity : "  + (currCapacity/totalCapacity) *100 + "% full");
+        System.out.println("Capacity : " + (currCapacity / totalCapacity) * 100 + "% full");
 
     }
 
@@ -126,7 +119,7 @@ public class CleanSweep {
         int x = sensors.currentLocation.x - 1;
         int y = sensors.currentLocation.y;
 
-        sensors.currentLocation = new Location(x,y);
+        sensors.currentLocation = new Location(x, y);
         updateCurrentCell();
     }
 
@@ -135,7 +128,7 @@ public class CleanSweep {
         int x = sensors.currentLocation.x + 1;
         int y = sensors.currentLocation.y;
 
-        sensors.currentLocation = new Location(x,y);
+        sensors.currentLocation = new Location(x, y);
         updateCurrentCell();
     }
 
@@ -144,7 +137,7 @@ public class CleanSweep {
         int x = sensors.currentLocation.x;
         int y = sensors.currentLocation.y + 1;
 
-        sensors.currentLocation = new Location(x,y);
+        sensors.currentLocation = new Location(x, y);
         updateCurrentCell();
     }
 
@@ -153,7 +146,7 @@ public class CleanSweep {
         int x = sensors.currentLocation.x;
         int y = sensors.currentLocation.y - 1;
 
-        sensors.currentLocation = new Location(x,y);
+        sensors.currentLocation = new Location(x, y);
         updateCurrentCell();
     }
 
@@ -174,17 +167,15 @@ public class CleanSweep {
         sleep(1000);
         sensors.floorPlan.print();
 
-        while(!(sensors.isEastWall() && sensors.isSouthWall())) {
-            if(!sensors.isWall(direction)) {
+        while (!(sensors.isEastWall() && sensors.isSouthWall())) {
+            if (!sensors.isWall(direction)) {
                 move(direction);
-            }
-            else {
+            } else {
                 moveEast();
 
                 if (direction == Direction.SOUTH) {
                     direction = Direction.NORTH;
-                }
-                else {
+                } else {
                     direction = Direction.SOUTH;
                 }
             }
@@ -195,7 +186,16 @@ public class CleanSweep {
             sleep(1000);
             sensors.floorPlan.print();
 
-            System.out.format("Current Location \n x: %d, y: %d\n",sensors.currentLocation.x,sensors.currentLocation.y);
+            System.out.format("Current Location \n x: %d, y: %d\n", sensors.currentLocation.x, sensors.currentLocation.y);
+        }
+    }
+
+    public void turnOn() {
+        try {
+            zigZag();
+        } catch (InterruptedException e) {
+            System.out.println("CleanSweep cannot be turned on. Please contact customer support.");
+            e.printStackTrace();
         }
     }
 }
