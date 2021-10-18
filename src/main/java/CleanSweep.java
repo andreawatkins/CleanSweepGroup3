@@ -6,7 +6,7 @@ public class CleanSweep {
     //dirt level, whether there are walls to N, S, E, W, etc.) via some method like "report"
     private double battery;
     private double currCapacity;
-    private double totalCapacity = 60.0;
+    private double totalCapacity = 50.0;
     public FloorCell currentLocation;
     public FloorCell previousLocation;
     public SensorSimulator sensors;
