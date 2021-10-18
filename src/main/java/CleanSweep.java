@@ -1,19 +1,21 @@
+import static java.lang.Thread.sleep;
+
 public class CleanSweep {
     //this class should have an instance of sensor simulator.
     //sensor simulator should check the current floor cell for details like surface type,
     //dirt level, whether there are walls to N, S, E, W, etc.) via some method like "report"
     private double battery;
-    private int currCapacity;
-    private int totalCapacity = 60;
-    private FloorCell currentLocation;
-    private FloorCell previousLocation;
+    private double currCapacity;
+    private double totalCapacity = 50.0;
+    public FloorCell currentLocation;
+    public FloorCell previousLocation;
     public SensorSimulator sensors;
     public Location location; //starting location
     private CleanSweep cleanSweep = null;
     public State currentState;
 
 
-    public CleanSweep(Double battery, int currCapacity, SensorSimulator sensors, FloorCell currentLocation, FloorCell previousLocation) {
+    public CleanSweep(Double battery, double currCapacity, SensorSimulator sensors, FloorCell currentLocation, FloorCell previousLocation) {
         this.sensors = sensors;
         this.currentLocation = currentLocation;
         this.previousLocation = previousLocation;
@@ -66,9 +68,9 @@ public class CleanSweep {
 
 
         }
-
         if (needToCharge()) {System.out.println(this.currentState); return battery;}
-        else return battery;
+        else System.out.println("Battery Percent: " + (battery/250)*100 + "%" ); return battery;
+
     }
 
     public boolean needToCharge() {
@@ -80,19 +82,27 @@ public class CleanSweep {
         } else return false;
     }
 
-    public void suckUpDirt() {
+    public void suckUpDirt() throws InterruptedException {
         while (currentLocation.dirtAmount > 0) {
+            System.out.println("Cleaning... " + currentLocation.dirtAmount + " units of dirt left");
             currentLocation.dirtAmount--;
             currCapacity ++;
-            System.out.println("Cleaning... " + previousLocation.dirtAmount + " units of dirt left");
+            sleep(1000);
+
+
+
+
+
         }
 
+
         System.out.println("FloorCell is Clean!");
-        System.out.println("Capacity at : "  + currCapacity + " units");
+        System.out.println("Capacity : "  + (currCapacity/totalCapacity) *100 + "% full");
 
     }
 
     public void move(Direction direction) {
+        FloorCell tempPrev = currentLocation;
         if (direction == Direction.SOUTH) {
             moveSouth();
         }
@@ -108,6 +118,7 @@ public class CleanSweep {
         if (direction == Direction.WEST) {
             moveWest();
         }
+        tempPrev = previousLocation;
     }
 
     public void moveNorth() {
@@ -150,11 +161,18 @@ public class CleanSweep {
         int x = sensors.currentLocation.x;
         int y = sensors.currentLocation.y;
 
+
         currentLocation = sensors.floorPlan.floorLayout.get(x).get(y);
     }
 
-    public void zigZag() {
+    public void zigZag() throws InterruptedException {
         Direction direction = Direction.SOUTH;
+        sleep(1000);
+        suckUpDirt();
+        sleep(1000);
+        useBattery();
+        sleep(1000);
+        sensors.floorPlan.print();
 
         while(!(sensors.isEastWall() && sensors.isSouthWall())) {
             if(!sensors.isWall(direction)) {
@@ -170,10 +188,14 @@ public class CleanSweep {
                     direction = Direction.SOUTH;
                 }
             }
-
+            sleep(1000);
             suckUpDirt();
+            sleep(1000);
+            useBattery();
+            sleep(1000);
+            sensors.floorPlan.print();
 
-            System.out.format("x: %d, y: %d\n",sensors.currentLocation.x,sensors.currentLocation.y);
+            System.out.format("Current Location \n x: %d, y: %d\n",sensors.currentLocation.x,sensors.currentLocation.y);
         }
     }
 }
