@@ -22,6 +22,7 @@ public class FloorCell {
     public int dirtAmount; // [0-5]; 0 is no dirt, 5 is a lot of dirt
     public EnumSet<Wall> wallsPresent;
     public int rowIndex, colIndex; // where in the FloorPlan it is
+    public Location location;
 
 
     public FloorCell(SurfaceType surfaceType, int dirtAmount, EnumSet<Wall> wallsPresent, int rowIndex, int colIndex) {
@@ -30,5 +31,6 @@ public class FloorCell {
         this.wallsPresent = wallsPresent;
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
+        this.location = new Location (rowIndex, colIndex);
     }
 }
