@@ -32,41 +32,52 @@ public class CleanSweep {
         return cleanSweep;
     }
 
+    public void turnOff() {
+        currentState = State.OFF;
+        System.out.println("CleanSweep is shutting down...");
+        System.exit(0);
+    }
+
+    public boolean isOn() {
+        return currentState.equals(State.ON);
+    }
+
 
     public double useBattery() {
-        double batteryDec = 0;
+        if (isOn()) {
+            double batteryDec = 0;
 
-        if (currentLocation.surfaceType == SurfaceType.BARE_FLOOR)
-            batteryDec = 1;
-        if (currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET)
-            batteryDec = 2;
-        else if (currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET)
-            batteryDec = 3;
+            if (currentLocation.surfaceType == SurfaceType.BARE_FLOOR)
+                batteryDec = 1;
+            if (currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET)
+                batteryDec = 2;
+            else if (currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET)
+                batteryDec = 3;
 
-        if (previousLocation == currentLocation) {
-            battery = battery - batteryDec;
-        } else {
-            if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
-                battery = battery - ((batteryDec + 2) / 2);
-            if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
-                battery = battery - ((batteryDec + 3) / 2);
-            if ((currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.BARE_FLOOR))
-                battery = battery - ((batteryDec + 1) / 2);
-            if ((currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
-                battery = battery - ((batteryDec + 3) / 2);
-            if ((currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.BARE_FLOOR))
-                battery = battery - ((batteryDec + 1) / 2);
-            if ((currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
-                battery = battery - ((batteryDec + 2) / 2);
+            if (previousLocation == currentLocation) {
+                battery = battery - batteryDec;
+            } else {
+                if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
+                    battery = battery - ((batteryDec + 2) / 2);
+                if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
+                    battery = battery - ((batteryDec + 3) / 2);
+                if ((currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.BARE_FLOOR))
+                    battery = battery - ((batteryDec + 1) / 2);
+                if ((currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
+                    battery = battery - ((batteryDec + 3) / 2);
+                if ((currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.BARE_FLOOR))
+                    battery = battery - ((batteryDec + 1) / 2);
+                if ((currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
+                    battery = battery - ((batteryDec + 2) / 2);
 
 
+            }
+            if (needToCharge()) {
+                System.out.println(this.currentState);
+                return battery;
+            } else System.out.println("Battery Percent: " + (battery / 250) * 100 + "%");
         }
-        if (needToCharge()) {
-            System.out.println(this.currentState);
-            return battery;
-        } else System.out.println("Battery Percent: " + (battery / 250) * 100 + "%");
         return battery;
-
     }
 
     public boolean needToCharge() {
@@ -79,13 +90,13 @@ public class CleanSweep {
     }
 
     public void suckUpDirt() throws InterruptedException {
-        while (currentLocation.dirtAmount > 0) {
-            System.out.println("Cleaning... " + currentLocation.dirtAmount + " units of dirt left");
-            currentLocation.dirtAmount--;
-            currCapacity++;
-            sleep(1000);
-
-
+        if (isOn()) {
+            while (currentLocation.dirtAmount > 0) {
+                System.out.println("Cleaning... " + currentLocation.dirtAmount + " units of dirt left");
+                currentLocation.dirtAmount--;
+                currCapacity++;
+                sleep(1000);
+            }
         }
 
 
@@ -96,58 +107,68 @@ public class CleanSweep {
 
     public void move(Direction direction) {
         FloorCell tempPrev = currentLocation;
-        if (direction == Direction.SOUTH) {
-            moveSouth();
-        }
+        if (isOn()) {
+            if (direction == Direction.SOUTH) {
+                moveSouth();
+            }
 
-        if (direction == Direction.EAST) {
-            moveEast();
-        }
+            if (direction == Direction.EAST) {
+                moveEast();
+            }
 
-        if (direction == Direction.NORTH) {
-            moveNorth();
-        }
+            if (direction == Direction.NORTH) {
+                moveNorth();
+            }
 
-        if (direction == Direction.WEST) {
-            moveWest();
+            if (direction == Direction.WEST) {
+                moveWest();
+            }
+            tempPrev = previousLocation;
         }
-        tempPrev = previousLocation;
     }
 
     public void moveNorth() {
-        System.out.println("Move North");
-        int x = sensors.currentLocation.x - 1;
-        int y = sensors.currentLocation.y;
+        if (isOn()) {
+            System.out.println("Move North");
+            int x = sensors.currentLocation.x - 1;
+            int y = sensors.currentLocation.y;
 
-        sensors.currentLocation = new Location(x, y);
-        updateCurrentCell();
+            sensors.currentLocation = new Location(x, y);
+            updateCurrentCell();
+        }
     }
 
     public void moveSouth() {
-        System.out.println("Move South");
-        int x = sensors.currentLocation.x + 1;
-        int y = sensors.currentLocation.y;
+        if (isOn()) {
+            System.out.println("Move South");
+            int x = sensors.currentLocation.x + 1;
+            int y = sensors.currentLocation.y;
 
-        sensors.currentLocation = new Location(x, y);
-        updateCurrentCell();
+            sensors.currentLocation = new Location(x, y);
+            updateCurrentCell();
+        }
     }
 
     public void moveEast() {
-        System.out.println("Move East");
-        int x = sensors.currentLocation.x;
-        int y = sensors.currentLocation.y + 1;
+        if (isOn()) {
+            System.out.println("Move East");
+            int x = sensors.currentLocation.x;
+            int y = sensors.currentLocation.y + 1;
 
-        sensors.currentLocation = new Location(x, y);
-        updateCurrentCell();
+            sensors.currentLocation = new Location(x, y);
+            updateCurrentCell();
+        }
     }
 
     public void moveWest() {
-        System.out.println("Move West");
-        int x = sensors.currentLocation.x;
-        int y = sensors.currentLocation.y - 1;
+        if (isOn()) {
+            System.out.println("Move West");
+            int x = sensors.currentLocation.x;
+            int y = sensors.currentLocation.y - 1;
 
-        sensors.currentLocation = new Location(x, y);
-        updateCurrentCell();
+            sensors.currentLocation = new Location(x, y);
+            updateCurrentCell();
+        }
     }
 
     public void updateCurrentCell() {
@@ -159,26 +180,8 @@ public class CleanSweep {
     }
 
     public void zigZag() throws InterruptedException {
-        Direction direction = Direction.SOUTH;
-        sleep(1000);
-        suckUpDirt();
-        sleep(1000);
-        useBattery();
-        sleep(1000);
-        sensors.floorPlan.print();
-
-        while (!(sensors.isEastWall() && sensors.isSouthWall())) {
-            if (!sensors.isWall(direction)) {
-                move(direction);
-            } else {
-                moveEast();
-
-                if (direction == Direction.SOUTH) {
-                    direction = Direction.NORTH;
-                } else {
-                    direction = Direction.SOUTH;
-                }
-            }
+        if (isOn()) {
+            Direction direction = Direction.SOUTH;
             sleep(1000);
             suckUpDirt();
             sleep(1000);
@@ -186,11 +189,32 @@ public class CleanSweep {
             sleep(1000);
             sensors.floorPlan.print();
 
-            System.out.format("Current Location \n x: %d, y: %d\n", sensors.currentLocation.x, sensors.currentLocation.y);
+            while (!(sensors.isEastWall() && sensors.isSouthWall())) {
+                if (!sensors.isWall(direction)) {
+                    move(direction);
+                } else {
+                    moveEast();
+
+                    if (direction == Direction.SOUTH) {
+                        direction = Direction.NORTH;
+                    } else {
+                        direction = Direction.SOUTH;
+                    }
+                }
+                sleep(1000);
+                suckUpDirt();
+                sleep(1000);
+                useBattery();
+                sleep(1000);
+                sensors.floorPlan.print();
+
+                System.out.format("Current Location \n x: %d, y: %d\n", sensors.currentLocation.x, sensors.currentLocation.y);
+            }
         }
     }
 
     public void turnOn() {
+        currentState = State.ON;
         try {
             zigZag();
         } catch (InterruptedException e) {
