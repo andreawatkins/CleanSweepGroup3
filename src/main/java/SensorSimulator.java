@@ -95,31 +95,30 @@ public class SensorSimulator {
         int x = currentLocation.getX();
         int y = currentLocation.getY();
         FloorCell cell = floorPlan.floorLayout.get(x).get(y);
-        if (!cell.wallsPresent.contains(Wall.NORTH_WALL)) {
+        if (!cell.wallsPresent.contains(Wall.NORTH_WALL) || isObstacle(Direction.NORTH)) {
             openDirections.add(Direction.NORTH);
         }
-        if (!cell.wallsPresent.contains(Wall.EAST_WALL)) {
+        if (!cell.wallsPresent.contains(Wall.EAST_WALL) || isObstacle(Direction.EAST)) {
             openDirections.add(Direction.EAST);
         }
-        if (!cell.wallsPresent.contains(Wall.SOUTH_WALL)) {
+        if (!cell.wallsPresent.contains(Wall.SOUTH_WALL) || isObstacle(Direction.SOUTH)) {
             openDirections.add(Direction.SOUTH);
         }
-        if (!cell.wallsPresent.contains(Wall.WEST_WALL)) {
+        if (!cell.wallsPresent.contains(Wall.WEST_WALL) || isObstacle(Direction.WEST)) {
             openDirections.add(Direction.WEST);
-        } else if (cell.wallsPresent.contains(Wall.NORTH_WALL)
+        } else if ((cell.wallsPresent.contains(Wall.NORTH_WALL)
                 && cell.wallsPresent.contains(Wall.SOUTH_WALL)
                 && cell.wallsPresent.contains(Wall.EAST_WALL)
-                && cell.wallsPresent.contains(Wall.WEST_WALL)) {
+                && cell.wallsPresent.contains(Wall.WEST_WALL))
+                || (isObstacle(Direction.NORTH)
+                && isObstacle(Direction.SOUTH)
+                && isObstacle(Direction.EAST))
+                && isObstacle(Direction.WEST)) {
             System.out.println("Error. Clean Sweep is stuck.");
         }
         return openDirections;
     }
 
-    /*
-    public Location getCurrentLocation(){
-
-    }
-     */
 
     /* public HashMap<Location, Integer>
     public HashMap<Location, Integer> visitedCells(){;
