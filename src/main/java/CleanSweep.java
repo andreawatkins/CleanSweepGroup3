@@ -7,7 +7,6 @@ public class CleanSweep {
     public FloorCell currentLocation;
     public FloorCell previousLocation;
     public SensorSimulator sensors;
-    public Location location; //starting location
     private CleanSweep cleanSweep = null;
     public State currentState;
 
@@ -19,17 +18,6 @@ public class CleanSweep {
         this.battery = battery;
         this.currCapacity = currCapacity;
 
-    }
-
-    public CleanSweep getInstance() {
-        if (cleanSweep == null) {
-            synchronized (CleanSweep.class) {
-                if (cleanSweep == null) {
-                    cleanSweep = new CleanSweep(battery, currCapacity, sensors, currentLocation, previousLocation);
-                }
-            }
-        }
-        return cleanSweep;
     }
 
     public void turnOff() {
@@ -106,6 +94,7 @@ public class CleanSweep {
     }
 
     public void move(Direction direction) {
+        sensors.visitedCells(sensors.floorPlan);
         FloorCell tempPrev = currentLocation;
         if (isOn()) {
             if (direction == Direction.SOUTH) {
@@ -211,6 +200,10 @@ public class CleanSweep {
                 System.out.format("Current Location \n x: %d, y: %d\n", sensors.currentLocation.x, sensors.currentLocation.y);
             }
         }
+        sensors.printVisitedLocations();
+        //just a print test to confirm this works.
+        //you can also stick this inside of the loop and get an updated map for each cell
+
     }
 
     public void turnOn() {
