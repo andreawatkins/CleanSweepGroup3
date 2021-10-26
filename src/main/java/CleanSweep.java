@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Stack;
+
 import static java.lang.Thread.sleep;
 
 public class CleanSweep {
@@ -11,6 +14,9 @@ public class CleanSweep {
     private CleanSweep cleanSweep = null;
     public State currentState;
 
+    Stack<Location> traverseLocations = new Stack<>();
+    Stack<FloorNode> traverseStack = new Stack<>();
+    ArrayList<FloorCell> visitedCells = new ArrayList<>();
 
     public CleanSweep(Double battery, double currCapacity, SensorSimulator sensors, FloorCell currentLocation, FloorCell previousLocation) {
         this.sensors = sensors;
@@ -175,7 +181,6 @@ public class CleanSweep {
         int x = sensors.currentLocation.x;
         int y = sensors.currentLocation.y;
 
-
         currentLocation = sensors.floorPlan.floorLayout.get(x).get(y);
     }
 
@@ -213,10 +218,62 @@ public class CleanSweep {
         }
     }
 
+    public void traverseFloor() throws InterruptedException {
+        FloorNode startNode = new FloorNode(null, new Location(0,0) , null); // Location hard coded to 0,0 for now
+        FloorNode previousNode = startNode;
+        traverseStack.push(startNode);
+
+        while (!traverseStack.isEmpty()) {
+            FloorNode currentNode = traverseStack.pop();
+
+            // Find next moves
+            for (Direction movingDirection : sensors.getTraversableDirections(currentNode.onGrid)) {
+                FloorCell cellOption = nextCell(currentNode, movingDirection);
+                FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
+
+                if (!visitedCells.contains(cellOption) && !traverseStack.contains(nodeOption)) {
+                    traverseStack.push(nodeOption);
+                }
+            }
+
+            move(currentNode.howWeGotHere);
+            System.out.format("Current Location \n x: %d, y: %d\n", sensors.currentLocation.x, sensors.currentLocation.y);
+            visitedCells.add(currentLocation);
+            //suckUpDirt();
+            sensors.floorPlan.print();
+
+            previousNode = currentNode;
+        }
+    }
+
+    public FloorCell nextCell(FloorNode parent, Direction travelingDirection) {
+        int x;
+        int y;
+
+        if (travelingDirection == Direction.NORTH) {
+            x = parent.onGrid.x - 1;
+            y = parent.onGrid.y;
+        }
+        else if (travelingDirection == Direction.EAST) {
+            x = parent.onGrid.x;
+            y = parent.onGrid.y + 1;
+        }
+        else if (travelingDirection == Direction.SOUTH) {
+            x = parent.onGrid.x + 1;
+            y = parent.onGrid.y;
+        }
+        else {
+            x = parent.onGrid.x;
+            y = parent.onGrid.y - 1;
+        }
+
+        return sensors.floorPlan.floorLayout.get(x).get(y);
+    }
+
     public void turnOn() {
         currentState = State.ON;
         try {
-            zigZag();
+            traverseFloor();
         } catch (InterruptedException e) {
             System.out.println("CleanSweep cannot be turned on. Please contact customer support.");
             e.printStackTrace();
