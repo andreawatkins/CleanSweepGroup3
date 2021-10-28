@@ -7,6 +7,7 @@ public class CleanSweep {
     public FloorCell currentLocation;
     public FloorCell previousLocation;
     public SensorSimulator sensors;
+    public Location location; // starting location
     private CleanSweep cleanSweep = null;
     public State currentState;
 
@@ -63,7 +64,7 @@ public class CleanSweep {
             if (needToCharge()) {
                 System.out.println(this.currentState);
                 return battery;
-            } else System.out.println("Battery Percent: " + (battery / 250) * 100 + "%");
+            } else System.out.println("Battery: " + String.format("%.1f", (battery / 250) * 100) + "% left");
         }
         return battery;
     }
@@ -80,16 +81,15 @@ public class CleanSweep {
     public void suckUpDirt() throws InterruptedException {
         if (isOn()) {
             while (currentLocation.dirtAmount > 0) {
-                System.out.println("Cleaning... " + currentLocation.dirtAmount + " units of dirt left");
+                System.out.println("Cleaning... " + currentLocation.dirtAmount + " unit" + (currentLocation.dirtAmount == 1 ? "" : "s") + " of dirt left");
                 currentLocation.dirtAmount--;
                 currCapacity++;
                 sleep(1000);
             }
         }
 
-
-        System.out.println("FloorCell is Clean!");
-        System.out.println("Capacity : " + (currCapacity / totalCapacity) * 100 + "% full");
+        System.out.println("Clean!\n");
+        System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
 
     }
 
@@ -118,7 +118,7 @@ public class CleanSweep {
 
     public void moveNorth() {
         if (isOn()) {
-            System.out.println("Move North");
+            System.out.println("Moved north.");
             int x = sensors.currentLocation.x - 1;
             int y = sensors.currentLocation.y;
 
@@ -129,7 +129,7 @@ public class CleanSweep {
 
     public void moveSouth() {
         if (isOn()) {
-            System.out.println("Move South");
+            System.out.println("Moved south.");
             int x = sensors.currentLocation.x + 1;
             int y = sensors.currentLocation.y;
 
@@ -140,7 +140,7 @@ public class CleanSweep {
 
     public void moveEast() {
         if (isOn()) {
-            System.out.println("Move East");
+            System.out.println("Moved east.");
             int x = sensors.currentLocation.x;
             int y = sensors.currentLocation.y + 1;
 
@@ -151,7 +151,7 @@ public class CleanSweep {
 
     public void moveWest() {
         if (isOn()) {
-            System.out.println("Move West");
+            System.out.println("Moved west.");
             int x = sensors.currentLocation.x;
             int y = sensors.currentLocation.y - 1;
 
@@ -163,22 +163,27 @@ public class CleanSweep {
     public void updateCurrentCell() {
         int x = sensors.currentLocation.x;
         int y = sensors.currentLocation.y;
-
-
         currentLocation = sensors.floorPlan.floorLayout.get(x).get(y);
     }
 
     public void zigZag() throws InterruptedException {
         if (isOn()) {
+            System.out.println();
+            sensors.floorPlan.print(FloorPlan::printDirtAmount);
+
             Direction direction = Direction.SOUTH;
             sleep(1000);
             suckUpDirt();
             sleep(1000);
             useBattery();
             sleep(1000);
-            sensors.floorPlan.print();
+
+            System.out.println();
+            sensors.floorPlan.print(FloorPlan::printDirtAmount);
 
             while (!(sensors.isEastWall() && sensors.isSouthWall())) {
+                System.out.println();
+
                 if (!sensors.isWall(direction)) {
                     move(direction);
                 } else {
@@ -190,14 +195,17 @@ public class CleanSweep {
                         direction = Direction.SOUTH;
                     }
                 }
+
+                System.out.format("Current Location: (%d, %d)\n", sensors.currentLocation.x, sensors.currentLocation.y);
+
                 sleep(1000);
                 suckUpDirt();
                 sleep(1000);
                 useBattery();
                 sleep(1000);
-                sensors.floorPlan.print();
 
-                System.out.format("Current Location \n x: %d, y: %d\n", sensors.currentLocation.x, sensors.currentLocation.y);
+                System.out.println();
+                sensors.floorPlan.print(FloorPlan::printDirtAmount);
             }
         }
         sensors.printVisitedLocations();
@@ -211,7 +219,7 @@ public class CleanSweep {
         try {
             zigZag();
         } catch (InterruptedException e) {
-            System.out.println("CleanSweep cannot be turned on. Please contact customer support.");
+            System.out.println("Clean Sweep cannot be turned on. Please contact customer support.");
             e.printStackTrace();
         }
     }
