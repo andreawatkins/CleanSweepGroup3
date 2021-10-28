@@ -136,6 +136,10 @@ public class SensorSimulator {
         return visited;
     }
 
+    public boolean hasVisited(FloorCell floorCell) {
+        return visited.containsKey(floorCell);
+    }
+
     public void printVisitedLocations() {
         for (Map.Entry<FloorCell, Integer> entry : visited.entrySet()) {
             System.out.println("Location Coordinates: ");

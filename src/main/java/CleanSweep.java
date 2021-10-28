@@ -172,11 +172,11 @@ public class CleanSweep {
             sensors.floorPlan.print(FloorPlan::printDirtAmount);
 
             Direction direction = Direction.SOUTH;
-            sleep(1000);
+            //sleep(1000);
             suckUpDirt();
-            sleep(1000);
+            //sleep(1000);
             useBattery();
-            sleep(1000);
+            //sleep(1000);
 
             System.out.println();
             sensors.floorPlan.print(FloorPlan::printDirtAmount);
@@ -198,11 +198,11 @@ public class CleanSweep {
 
                 System.out.format("Current Location: (%d, %d)\n", sensors.currentLocation.x, sensors.currentLocation.y);
 
-                sleep(1000);
+                //sleep(1000);
                 suckUpDirt();
-                sleep(1000);
+                //sleep(1000);
                 useBattery();
-                sleep(1000);
+                //sleep(1000);
 
                 System.out.println();
                 sensors.floorPlan.print(FloorPlan::printDirtAmount);
@@ -212,6 +212,8 @@ public class CleanSweep {
         //just a print test to confirm this works.
         //you can also stick this inside of the loop and get an updated map for each cell
 
+        System.out.println("Has CleanSweep visited floorCell 1,1? : " + sensors.hasVisited(sensors.floorPlan.floorLayout.get(1).get(1)));
+        
     }
 
     public void turnOn() {
