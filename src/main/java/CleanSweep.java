@@ -14,7 +14,7 @@ public class CleanSweep {
     private CleanSweep cleanSweep = null;
     public State currentState;
 
-    Stack<Location> traverseLocations = new Stack<>();
+    Stack<FloorNode> visitedStack = new Stack<>();
     Stack<FloorNode> traverseStack = new Stack<>();
     ArrayList<FloorCell> visitedCells = new ArrayList<>();
 
@@ -111,26 +111,58 @@ public class CleanSweep {
 
     }
 
-    public void move(Direction direction) {
+    public Direction moveForward(Direction direction) {
         FloorCell tempPrev = currentLocation;
         if (isOn()) {
             if (direction == Direction.SOUTH) {
                 moveSouth();
+                return Direction.SOUTH;
             }
 
             if (direction == Direction.EAST) {
                 moveEast();
+                return Direction.EAST;
             }
 
             if (direction == Direction.NORTH) {
                 moveNorth();
+                return Direction.NORTH;
             }
 
             if (direction == Direction.WEST) {
                 moveWest();
+                return Direction.WEST;
             }
             tempPrev = previousLocation;
         }
+        return null;
+    }
+
+    public Direction moveBackward(Direction direction) {
+        FloorCell tempPrev = currentLocation;
+        if (isOn()) {
+            if (direction == Direction.SOUTH) {
+                moveNorth();
+                return Direction.NORTH;
+            }
+
+            if (direction == Direction.EAST) {
+                moveWest();
+                return Direction.WEST;
+            }
+
+            if (direction == Direction.NORTH) {
+                moveSouth();
+                return Direction.SOUTH;
+            }
+
+            if (direction == Direction.WEST) {
+                moveEast();
+                return Direction.EAST;
+            }
+            tempPrev = previousLocation;
+        }
+        return null;
     }
 
     public void moveNorth() {
@@ -196,7 +228,7 @@ public class CleanSweep {
 
             while (!(sensors.isEastWall() && sensors.isSouthWall())) {
                 if (!sensors.isWall(direction)) {
-                    move(direction);
+                    moveForward(direction);
                 } else {
                     moveEast();
 
@@ -219,9 +251,10 @@ public class CleanSweep {
     }
 
     public void traverseFloor() throws InterruptedException {
-        FloorNode startNode = new FloorNode(null, new Location(0,0) , null); // Location hard coded to 0,0 for now
+        FloorNode startNode = new FloorNode(null, new Location(0,0), null);
         FloorNode previousNode = startNode;
         traverseStack.push(startNode);
+        visitedCells.add(currentLocation);
 
         while (!traverseStack.isEmpty()) {
             FloorNode currentNode = traverseStack.pop();
@@ -231,16 +264,26 @@ public class CleanSweep {
                 FloorCell cellOption = nextCell(currentNode, movingDirection);
                 FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
 
-                if (!visitedCells.contains(cellOption) && !traverseStack.contains(nodeOption)) {
+                if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption, currentNode)) {
                     traverseStack.push(nodeOption);
                 }
             }
 
-            move(currentNode.howWeGotHere);
-            System.out.format("Current Location \n x: %d, y: %d\n", sensors.currentLocation.x, sensors.currentLocation.y);
-            visitedCells.add(currentLocation);
-            //suckUpDirt();
-            sensors.floorPlan.print();
+
+            if (currentNode != startNode) {
+                moveForward(currentNode.howWeGotHere); //Physical move
+                visitedCells.add(currentLocation);
+
+                boolean flag = canTraverse(currentNode);
+
+                while (!flag) {
+                    flag = canTraverse(currentNode);
+                    currentNode = currentNode.parent;
+                    moveBackward(currentNode.howWeGotHere);
+                }
+
+
+            }
 
             previousNode = currentNode;
         }
@@ -268,6 +311,42 @@ public class CleanSweep {
         }
 
         return sensors.floorPlan.floorLayout.get(x).get(y);
+    }
+
+    private boolean traverseStackContains(FloorNode nodeOption, FloorNode currentNode) {
+        for (FloorNode stackNode : traverseStack) {
+            if (stackNode.onGrid.x == nodeOption.onGrid.x && nodeOption.onGrid.y == currentNode.onGrid.y) {
+                stackNode.howWeGotHere = currentNode.howWeGotHere;
+                stackNode.parent = currentNode;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canTraverse(FloorNode currentNode) {
+        int xDif;
+        int yDif;
+
+        if (traverseStack.isEmpty()) {
+            return false;
+        }
+
+        for (FloorNode stackNode : traverseStack) {
+            if (stackNode.parent == currentNode) {
+                xDif = Math.abs(stackNode.onGrid.x - currentNode.onGrid.x);
+                yDif = Math.abs(stackNode.onGrid.y - currentNode.onGrid.y);
+
+                if (xDif == 0 && yDif == 1) {
+                    return true;
+                }
+
+                if (yDif == 0 && xDif == 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void turnOn() {
