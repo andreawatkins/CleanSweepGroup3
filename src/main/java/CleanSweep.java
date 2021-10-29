@@ -259,7 +259,9 @@ public class CleanSweep {
                 FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
 
                 if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption)) {
-                    traverseStack.push(nodeOption);
+                    if (cellOption.surfaceType != SurfaceType.OBSTACLE) {
+                        traverseStack.push(nodeOption);
+                    }
                 }
             }
 
@@ -267,7 +269,7 @@ public class CleanSweep {
             visitedCells.add(currentLocation);
 
             // Do work here
-            suckUpDirt();
+            //suckUpDirt();
 
             if(currentNode != startNode) {
                 while(!canTraverseStack()) {
@@ -279,7 +281,7 @@ public class CleanSweep {
             previousNode = currentNode;
         }
 
-        returnToCharger();
+        //returnToCharger();
     }
 
     public void returnToCharger() {
