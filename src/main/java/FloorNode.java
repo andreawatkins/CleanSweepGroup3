@@ -8,9 +8,4 @@ public class FloorNode {
         this.onGrid = onGrid;
         this.howWeGotHere = howWeGotHere;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        return true;
-    }
 }

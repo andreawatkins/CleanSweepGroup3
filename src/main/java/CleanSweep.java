@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Stack;
 
+import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 public class CleanSweep {
@@ -111,58 +112,79 @@ public class CleanSweep {
 
     }
 
+
+    public void move(FloorNode destination) {
+        if (destination.onGrid.x > currentLocation.rowIndex) {
+            moveSouth();
+        }
+        else if (destination.onGrid.x < currentLocation.rowIndex) {
+            moveNorth();
+        }
+
+        if (destination.onGrid.y > currentLocation.colIndex) {
+            moveEast();
+        }
+        else if (destination.onGrid.y < currentLocation.colIndex) {
+            moveWest();
+        }
+    }
+
     public Direction moveForward(Direction direction) {
+        Direction moveDirection = null;
+
         FloorCell tempPrev = currentLocation;
         if (isOn()) {
             if (direction == Direction.SOUTH) {
                 moveSouth();
-                return Direction.SOUTH;
+                moveDirection = Direction.SOUTH;
             }
 
             if (direction == Direction.EAST) {
                 moveEast();
-                return Direction.EAST;
+                moveDirection = Direction.EAST;
             }
 
             if (direction == Direction.NORTH) {
                 moveNorth();
-                return Direction.NORTH;
+                moveDirection = Direction.NORTH;
             }
 
             if (direction == Direction.WEST) {
                 moveWest();
-                return Direction.WEST;
+                moveDirection = Direction.WEST;
             }
             tempPrev = previousLocation;
         }
-        return null;
+        return moveDirection;
     }
 
     public Direction moveBackward(Direction direction) {
+        Direction moveDirection = null;
         FloorCell tempPrev = currentLocation;
+
         if (isOn()) {
             if (direction == Direction.SOUTH) {
                 moveNorth();
-                return Direction.NORTH;
+                moveDirection = Direction.NORTH;
             }
 
             if (direction == Direction.EAST) {
                 moveWest();
-                return Direction.WEST;
+                moveDirection = Direction.WEST;
             }
 
             if (direction == Direction.NORTH) {
                 moveSouth();
-                return Direction.SOUTH;
+                moveDirection = Direction.SOUTH;
             }
 
             if (direction == Direction.WEST) {
                 moveEast();
-                return Direction.EAST;
+                moveDirection = Direction.EAST;
             }
             tempPrev = previousLocation;
         }
-        return null;
+        return moveDirection;
     }
 
     public void moveNorth() {
@@ -251,42 +273,47 @@ public class CleanSweep {
     }
 
     public void traverseFloor() throws InterruptedException {
-        FloorNode startNode = new FloorNode(null, new Location(0,0), null);
+        FloorNode startNode = new FloorNode(null, new Location(0,0), null); //Hard code start location for now
         FloorNode previousNode = startNode;
+
         traverseStack.push(startNode);
-        visitedCells.add(currentLocation);
 
         while (!traverseStack.isEmpty()) {
             FloorNode currentNode = traverseStack.pop();
+            currentNode.parent = previousNode;
 
-            // Find next moves
+
             for (Direction movingDirection : sensors.getTraversableDirections(currentNode.onGrid)) {
                 FloorCell cellOption = nextCell(currentNode, movingDirection);
                 FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
 
-                if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption, currentNode)) {
+                if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption)) {
                     traverseStack.push(nodeOption);
                 }
             }
 
+            move(currentNode); //Move robot to cell corresponding to the current node
+            visitedCells.add(currentLocation);
 
-            if (currentNode != startNode) {
-                moveForward(currentNode.howWeGotHere); //Physical move
-                visitedCells.add(currentLocation);
+            // Do work here
 
-                boolean flag = canTraverse(currentNode);
+            suckUpDirt();
 
-                while (!flag) {
-                    flag = canTraverse(currentNode);
+            if(currentNode != startNode) {
+                while(!canTraverseStack()) {
                     currentNode = currentNode.parent;
-                    moveBackward(currentNode.howWeGotHere);
+                    move(currentNode);
                 }
-
-
             }
 
             previousNode = currentNode;
         }
+
+        returnToCharger();
+    }
+
+    public void returnToCharger() {
+        moveWest();
     }
 
     public FloorCell nextCell(FloorNode parent, Direction travelingDirection) {
@@ -313,40 +340,26 @@ public class CleanSweep {
         return sensors.floorPlan.floorLayout.get(x).get(y);
     }
 
-    private boolean traverseStackContains(FloorNode nodeOption, FloorNode currentNode) {
+    private boolean traverseStackContains(FloorNode nodeOption) {
         for (FloorNode stackNode : traverseStack) {
-            if (stackNode.onGrid.x == nodeOption.onGrid.x && nodeOption.onGrid.y == currentNode.onGrid.y) {
-                stackNode.howWeGotHere = currentNode.howWeGotHere;
-                stackNode.parent = currentNode;
+            if (stackNode.onGrid.x == nodeOption.onGrid.x && stackNode.onGrid.y == nodeOption.onGrid.y) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean canTraverse(FloorNode currentNode) {
-        int xDif;
-        int yDif;
-
+    private boolean canTraverseStack() {
         if (traverseStack.isEmpty()) {
-            return false;
+            return true;
         }
 
-        for (FloorNode stackNode : traverseStack) {
-            if (stackNode.parent == currentNode) {
-                xDif = Math.abs(stackNode.onGrid.x - currentNode.onGrid.x);
-                yDif = Math.abs(stackNode.onGrid.y - currentNode.onGrid.y);
+        FloorNode stackNode = traverseStack.lastElement(); //Top of the traverse stack
 
-                if (xDif == 0 && yDif == 1) {
-                    return true;
-                }
+        int diffX = Math.abs(stackNode.onGrid.x - currentLocation.rowIndex);
+        int diffY = Math.abs(stackNode.onGrid.y - currentLocation.colIndex);
 
-                if (yDif == 0 && xDif == 1) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return (diffX == 0 && diffY == 1) || (diffY == 0 && diffX == 1);
     }
 
     public void turnOn() {
