@@ -15,7 +15,6 @@ public class CleanSweep {
     private CleanSweep cleanSweep = null;
     public State currentState;
 
-    Stack<FloorNode> visitedStack = new Stack<>();
     Stack<FloorNode> traverseStack = new Stack<>();
     ArrayList<FloorCell> visitedCells = new ArrayList<>();
 
