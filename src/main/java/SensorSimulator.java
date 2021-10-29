@@ -137,7 +137,11 @@ public class SensorSimulator {
     }
 
     public boolean hasVisited(FloorCell floorCell) {
-        return visited.containsKey(floorCell);
+        if (visited.get(floorCell) >= 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void printVisitedLocations() {
