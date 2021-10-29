@@ -212,6 +212,8 @@ public class CleanSweep {
         //just a print test to confirm this works.
         //you can also stick this inside of the loop and get an updated map for each cell
 
+        System.out.println("Has CleanSweep visited floorCell 1,1? : " + sensors.hasVisited(sensors.floorPlan.floorLayout.get(1).get(1)));
+
     }
 
     public void turnOn() {

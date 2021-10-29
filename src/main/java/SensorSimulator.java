@@ -136,6 +136,14 @@ public class SensorSimulator {
         return visited;
     }
 
+    public boolean hasVisited(FloorCell floorCell) {
+        if (visited.get(floorCell) >= 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void printVisitedLocations() {
         for (Map.Entry<FloorCell, Integer> entry : visited.entrySet()) {
             System.out.println("Location Coordinates: ");
