@@ -5,7 +5,20 @@ enum SurfaceType {
     LOW_PILE_CARPET,
     HIGH_PILE_CARPET,
     OBSTACLE,
-    CHARGING_STATION
+    CHARGING_STATION;
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case BARE_FLOOR:       return "B";
+            case LOW_PILE_CARPET:  return "L";
+            case HIGH_PILE_CARPET: return "H";
+            case OBSTACLE:         return "O";
+            case CHARGING_STATION: return "C";
+        }
+
+        return "";
+    }
 }
 
 
