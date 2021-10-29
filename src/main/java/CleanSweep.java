@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Stack;
 
-import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 public class CleanSweep {
@@ -128,7 +127,7 @@ public class CleanSweep {
         }
     }
 
-    public Direction moveForward(Direction direction) {
+    public Direction moveDirection(Direction direction) {
         Direction moveDirection = null;
 
         FloorCell tempPrev = currentLocation;
@@ -157,34 +156,6 @@ public class CleanSweep {
         return moveDirection;
     }
 
-    public Direction moveBackward(Direction direction) {
-        Direction moveDirection = null;
-        FloorCell tempPrev = currentLocation;
-
-        if (isOn()) {
-            if (direction == Direction.SOUTH) {
-                moveNorth();
-                moveDirection = Direction.NORTH;
-            }
-
-            if (direction == Direction.EAST) {
-                moveWest();
-                moveDirection = Direction.WEST;
-            }
-
-            if (direction == Direction.NORTH) {
-                moveSouth();
-                moveDirection = Direction.SOUTH;
-            }
-
-            if (direction == Direction.WEST) {
-                moveEast();
-                moveDirection = Direction.EAST;
-            }
-            tempPrev = previousLocation;
-        }
-        return moveDirection;
-    }
 
     public void moveNorth() {
         if (isOn()) {
@@ -249,7 +220,7 @@ public class CleanSweep {
 
             while (!(sensors.isEastWall() && sensors.isSouthWall())) {
                 if (!sensors.isWall(direction)) {
-                    moveForward(direction);
+                    moveDirection(direction);
                 } else {
                     moveEast();
 
@@ -295,7 +266,6 @@ public class CleanSweep {
             visitedCells.add(currentLocation);
 
             // Do work here
-
             suckUpDirt();
 
             if(currentNode != startNode) {

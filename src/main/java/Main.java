@@ -3,7 +3,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         List<Direction> directions;
-        FloorPlan floorPlan = new FloorPlan(3, 4);
+        FloorPlan floorPlan = new FloorPlan(3, 3);
         floorPlan.print();
 
         Location startingLocation = new Location(0, 0);
