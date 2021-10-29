@@ -2,6 +2,9 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        FloorPlan.twoRoomsFloorPlan(4, 6, 3, 4);
+
+        /*
         int height, width;
 
         do {
@@ -33,6 +36,7 @@ public class Main {
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
         cs.turnOn();
         System.out.println("\nDONE!");
+         */
     }
 }
 

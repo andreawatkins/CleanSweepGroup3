@@ -52,8 +52,8 @@ public class FloorPlan {
         int obstacleStartX, obstacleStartY;
 
         do {
-            obstacleStartX = ThreadLocalRandom.current().nextInt(0, width);
-            obstacleStartY = ThreadLocalRandom.current().nextInt(0, height);
+            obstacleStartX = ThreadLocalRandom.current().nextInt(0, height);
+            obstacleStartY = ThreadLocalRandom.current().nextInt(0, width);
 
             if (!(obstacleStartX == 0 && obstacleStartY == 0)) { // don't want to overwrite the charging station, try again
                 floorPlan.floorLayout.get(obstacleStartX).get(obstacleStartY).surfaceType = SurfaceType.OBSTACLE;
@@ -66,18 +66,55 @@ public class FloorPlan {
     }
 
 
-// TODO:
-//    public static FloorPlan twoRoomsFloorPlan(int firstRoomWidth, int firstRoomHeight, int secondRoomWidth, int secondRoomHeight) {
-//        FloorPlan firstRoom = FloorPlan.oneRoomFloorPlan(firstRoomWidth, firstRoomHeight);
-//        FloorPlan secondRoom = FloorPlan.oneRoomFloorPlan(secondRoomWidth, secondRoomHeight);
-//    }
+    public static void twoRoomsFloorPlan(int firstRoomWidth, int firstRoomHeight, int secondRoomWidth, int secondRoomHeight) {
+        FloorPlan firstRoom = FloorPlan.oneRoomFloorPlan(firstRoomWidth, firstRoomHeight);
+        FloorPlan secondRoom = FloorPlan.oneRoomFloorPlan(secondRoomWidth, secondRoomHeight);
+
+        int smallerHeight = Math.min(firstRoom.height, secondRoom.height);
+        int connectorX = smallerHeight / 2;
+        int connectorY = firstRoomWidth - 1;
+
+        FloorCell firstRoomConnectorCell = firstRoom.floorLayout.get(connectorX).get(connectorY);
+        firstRoomConnectorCell.wallsPresent.remove(Wall.EAST_WALL);
+
+        // append
+        for (int i = 0; i < firstRoom.height && i < secondRoom.height; ++i)
+            firstRoom.floorLayout.get(i).addAll(secondRoom.floorLayout.get(i));
+
+        if (secondRoom.height > firstRoom.height) {
+            firstRoom.floorLayout.addAll(secondRoom.floorLayout.subList(firstRoomHeight, secondRoomHeight));
+
+            for (int i = firstRoomHeight; i < secondRoomHeight; ++i)
+                for (int j = 0; j < firstRoomWidth; ++j) {
+                    SurfaceType surfaceType = (i == firstRoomHeight ? SurfaceType.UNDEFINED_BORDER : SurfaceType.UNDEFINED);
+                    firstRoom.floorLayout.get(i).add(0, new FloorCell(surfaceType, 0, EnumSet.noneOf(Wall.class), i, j));
+                }
+        }
+        else if (firstRoom.height > secondRoomHeight) {
+            List<FloorCell> undefinedRegion = firstRoom.floorLayout.get(secondRoomHeight);
+
+            for (int i = 0; i < secondRoomWidth; ++i)
+                undefinedRegion.add(new FloorCell(SurfaceType.UNDEFINED_BORDER, 0, EnumSet.noneOf(Wall.class), secondRoomHeight, i));
+        }
+
+        FloorCell secondRoomConnectorCell = firstRoom.floorLayout.get(connectorX).get(connectorY + 1);
+        secondRoomConnectorCell.wallsPresent.remove(Wall.WEST_WALL);
+
+        firstRoom.height = Math.max(firstRoomHeight, secondRoomHeight);
+        firstRoom.width = firstRoomWidth + secondRoomWidth;
+
+        firstRoom.print(FloorPlan::printDirtAmount);
+    }
 
 
     public static String printDirtAmount(FloorCell floorCell) {
         switch (floorCell.surfaceType) {
             case CHARGING_STATION:
+                return "C";
             case OBSTACLE:
                 return "X";
+            case UNDEFINED:
+                return " ";
             default:
                 return Integer.toString(floorCell.dirtAmount);
         }
@@ -98,13 +135,24 @@ public class FloorPlan {
             for (FloorCell cell : row) {
                 if (cell.wallsPresent.contains(Wall.WEST_WALL))
                     System.out.print("|");
+                else if (cell.surfaceType == SurfaceType.UNDEFINED_BORDER)
+                    System.out.print("-");
                 else
                     System.out.print(" ");
 
-                System.out.print(cellToStrFn.apply(cell));
+
+                if (cell.surfaceType == SurfaceType.UNDEFINED_BORDER)
+                    System.out.print("-");
+                else if (cell.surfaceType == SurfaceType.UNDEFINED)
+                    System.out.print(" ");
+                else
+                    System.out.print(cellToStrFn.apply(cell));
+
 
                 if (cell.wallsPresent.contains(Wall.EAST_WALL))
                     System.out.print("|");
+                else if (cell.surfaceType == SurfaceType.UNDEFINED_BORDER)
+                    System.out.print("-");
                 else
                     System.out.print(" ");
             }

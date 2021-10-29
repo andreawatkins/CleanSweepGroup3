@@ -5,7 +5,10 @@ enum SurfaceType {
     LOW_PILE_CARPET,
     HIGH_PILE_CARPET,
     OBSTACLE,
-    CHARGING_STATION;
+    CHARGING_STATION,
+
+    UNDEFINED,
+    UNDEFINED_BORDER;
 
     @Override
     public String toString() {
