@@ -10,7 +10,6 @@ public class CleanSweep {
     public FloorCell currentLocation;
     public FloorCell previousLocation;
     public SensorSimulator sensors;
-    public Location location; // starting location
     private CleanSweep cleanSweep = null;
     public State currentState;
 
@@ -250,17 +249,15 @@ public class CleanSweep {
     }
 
     public void traverseFloor() throws InterruptedException {
-        if(isOn()) {
-            FloorNode startNode = new FloorNode(null, new Location(0, 0), null); //Hard code start location for now
+        if (isOn()) {
+            FloorNode startNode = new FloorNode(null, new Location(0, 0), null); // Hard code start location for now
             FloorNode previousNode = startNode;
-
 
             traverseStack.push(startNode);
 
-            while (!traverseStack.isEmpty() && currentState!=State.CHARGING) {
+            while (!traverseStack.isEmpty() && currentState != State.CHARGING) {
                 FloorNode currentNode = traverseStack.pop();
                 currentNode.parent = previousNode;
-
 
                 for (Direction movingDirection : sensors.getTraversableDirections(currentNode.onGrid)) {
                     FloorCell cellOption = nextCell(currentNode, movingDirection);
@@ -272,13 +269,23 @@ public class CleanSweep {
                         }
                     }
                 }
-                move(currentNode); //Move robot to cell corresponding to the current node
+
+                move(currentNode); // Move robot to cell corresponding to the current node
+
+                System.out.println();
+                sensors.floorPlan.print(FloorPlan::printDirtAmount);
+                System.out.format("Current Location: (%d, %d)\n", sensors.currentLocation.x, sensors.currentLocation.y);
+
+                sleep(1000);
                 suckUpDirt();
+
+                sleep(1000);
                 useBattery();
+
                 visitedCells.add(currentLocation);
 
                 if (currentNode != startNode) {
-                    while (!canTraverseStack() && currentState!=State.CHARGING) {
+                    while (!canTraverseStack() && currentState != State.CHARGING) {
                         currentNode = currentNode.parent;
                         move(currentNode);
                         suckUpDirt();
@@ -290,8 +297,6 @@ public class CleanSweep {
             }
         }
         else returnToCharger();
-
-
     }
 
     public void returnToCharger() {
@@ -335,6 +340,7 @@ public class CleanSweep {
                 return true;
             }
         }
+
         return false;
     }
 
