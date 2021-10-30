@@ -1,48 +1,70 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-//        FloorPlan twoRooms = FloorPlan.twoRoomsFloorPlan(3, 2, 4, 6);
-//        twoRooms.print(FloorPlan::printDirtAmount);
-
-        // FloorPlan threeRooms = FloorPlan.threeRoomsFloorPlan(3, 2, 4, 6, 2, 4);
-        FloorPlan threeRooms = FloorPlan.threeRoomsFloorPlan(4, 5, 2, 3, 2, 8);
-
-        threeRooms.print(FloorPlan::printDirtAmount);
-
-        /*
-        int height, width;
+        int numRooms;
 
         do {
-            System.out.print("Width? ");
-            width = new Scanner(System.in).nextInt();
-        } while (width <= 1);
+            System.out.print("1, 2, or 3 rooms? ");
+            numRooms = new Scanner(System.in).nextInt();
+        } while (!(numRooms == 1 || numRooms == 2 || numRooms == 3));
 
-        do {
-            System.out.print("Height? ");
-            height = new Scanner(System.in).nextInt();
-        } while (height <= 1);
+        FloorPlan floorPlan = null;
+        List<Integer> widths = new ArrayList<>();
+        List<Integer> heights = new ArrayList<>();
 
-        FloorPlan oneRoom = FloorPlan.oneRoomFloorPlan(width, height);
+        int currentWidth = 0, currentHeight = 0;
+
+        for (int i = 0; i < numRooms; ++i) {
+            System.out.println(String.format("\nRoom %d", i + 1));
+
+            do {
+                System.out.print("   Width? ");
+                currentWidth = new Scanner(System.in).nextInt();
+            } while (currentWidth <= 1);
+
+            widths.add(currentWidth);
+            currentWidth = 0;
+
+            do {
+                System.out.print("   Height? ");
+                currentHeight = new Scanner(System.in).nextInt();
+            } while (currentHeight <= 1);
+
+            heights.add(currentHeight);
+            currentHeight = 0;
+        }
+
+
+        if (numRooms == 1) {
+            floorPlan = FloorPlan.oneRoomFloorPlan(widths.get(0), heights.get(0));
+        }
+        else if (numRooms == 2) {
+            floorPlan = FloorPlan.twoRoomsFloorPlan(widths.get(0), heights.get(0), widths.get(1), heights.get(1));
+        }
+        else if (numRooms == 3) {
+            floorPlan = FloorPlan.threeRoomsFloorPlan(widths.get(0), heights.get(0), widths.get(1), heights.get(1), widths.get(2), heights.get(2));
+        }
+
 
         FloorPlan.printKey();
         System.out.println("\nSurface types...");
-        oneRoom.print((FloorCell cell) -> cell.surfaceType.toString());
+        floorPlan.print((FloorCell cell) -> cell.surfaceType.toString());
 
         System.out.println("\nDirt amounts...");
-        oneRoom.print(FloorPlan::printDirtAmount);
+        floorPlan.print(FloorPlan::printDirtAmount);
         System.out.println();
 
         System.out.print("Ready to start? (press ENTER) ");
         new Scanner(System.in).nextLine();
 
         Location startingLocation = new Location(0, 0);
-        SensorSimulator sensor = new SensorSimulator(oneRoom, startingLocation);
+        SensorSimulator sensor = new SensorSimulator(floorPlan, startingLocation);
 
-        CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
+        CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0));
         cs.turnOn();
         System.out.println("\nDONE!");
-         */
     }
 }
-

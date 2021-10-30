@@ -1,9 +1,12 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SensorSimulator {
     public FloorPlan floorPlan;
     public Location currentLocation;
+    public HashMap<FloorCell, Integer> visited = new HashMap<>();
 
     public SensorSimulator(FloorPlan floorPlan, Location currentLocation) {
         this.floorPlan = floorPlan;
@@ -120,22 +123,48 @@ public class SensorSimulator {
     }
 
 
-    /* public HashMap<Location, Integer>
-    public HashMap<Location, Integer> visitedCells(){;
-    //something like: while state.ON -> for every "move" from one cell to another,
-    //check whether coordinates are in the map. if not,drop in the coordinates as key
-    //and a 1 for visited. If the coordinates already exist, check whether
+    public HashMap<FloorCell, Integer> visitedCells(FloorPlan floorPlan) {
+        int x = currentLocation.getX();
+        int y = currentLocation.getY();
+        int visitCount = 0;
+        FloorCell cell = floorPlan.floorLayout.get(x).get(y);
+        if (!visited.containsKey(cell)) {
+            visited.put(cell, ++visitCount);
+        } else {
+            visited.put(cell, visited.get(cell) + 1);
+        }
+        return visited;
     }
-     */
+
+    public boolean hasVisited(FloorCell floorCell) {
+        if (visited.get(floorCell) >= 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void printVisitedLocations() {
+        for (Map.Entry<FloorCell, Integer> entry : visited.entrySet()) {
+            System.out.println("Location Coordinates: ");
+            System.out.println("x: " + entry.getKey().location.getX() + ", "
+                    + "y: " + entry.getKey().location.getY() + " - "
+                    + " Times Visited: " + entry.getValue());
+        }
+    }
+
 
     public void print() {
         //testing direction-parameterized wall bool
+        /*
         System.out.println("------------------");
         System.out.println("Wall to the north? " + isWall(Direction.NORTH));
         System.out.println("Wall to the south? " + isWall(Direction.SOUTH));
         System.out.println("Wall to the east? " + isWall(Direction.EAST));
         System.out.println("Wall to the west? " + isWall(Direction.WEST));
 
+
+         */
         System.out.println("------------------");
         //testing output of traversable options
         System.out.println();
