@@ -115,6 +115,7 @@ public class CleanSweep {
             previousLocation = tempPrev;
         }
         else System.out.println("Current State is : " +currentState);
+
     }
 
     public Direction moveDirection(Direction direction) {
@@ -256,7 +257,7 @@ public class CleanSweep {
 
             traverseStack.push(startNode);
 
-            while (!traverseStack.isEmpty()) {
+            while (!traverseStack.isEmpty() && currentState!=State.CHARGING) {
                 FloorNode currentNode = traverseStack.pop();
                 currentNode.parent = previousNode;
 
@@ -277,7 +278,7 @@ public class CleanSweep {
                 visitedCells.add(currentLocation);
 
                 if (currentNode != startNode) {
-                    while (!canTraverseStack()) {
+                    while (!canTraverseStack() && currentState!=State.CHARGING) {
                         currentNode = currentNode.parent;
                         move(currentNode);
                         suckUpDirt();
@@ -352,6 +353,7 @@ public class CleanSweep {
 
     public void turnOn() {
         currentState = State.ON;
+
         try {
             traverseFloor();
         } catch (InterruptedException e) {
