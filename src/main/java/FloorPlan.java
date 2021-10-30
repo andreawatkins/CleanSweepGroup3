@@ -90,9 +90,15 @@ public class FloorPlan {
         FloorCell firstRoomConnectorCell = firstRoom.floorLayout.get(connectorX).get(connectorY);
         firstRoomConnectorCell.wallsPresent.remove(Wall.EAST_WALL);
 
+        // adjust rows and cols
+        for (List<FloorCell> row : secondRoom.floorLayout)
+            for (FloorCell floorCell : row)
+                floorCell.updateRowAndCol(floorCell.rowIndex, floorCell.colIndex + firstRoom.width);
+
         // append
         for (int i = 0; i < firstRoom.height && i < secondRoom.height; ++i)
             firstRoom.floorLayout.get(i).addAll(secondRoom.floorLayout.get(i));
+
 
         if (secondRoom.height > firstRoom.height) {
             firstRoom.floorLayout.addAll(secondRoom.floorLayout.subList(firstRoom.height, secondRoom.height));

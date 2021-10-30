@@ -8,10 +8,12 @@ public class SensorSimulator {
     public Location currentLocation;
     public HashMap<FloorCell, Integer> visited = new HashMap<>();
 
+
     public SensorSimulator(FloorPlan floorPlan, Location currentLocation) {
         this.floorPlan = floorPlan;
         this.currentLocation = currentLocation;
     }
+
 
     public boolean isNorthWall() {
         int x = currentLocation.getX();
@@ -20,12 +22,14 @@ public class SensorSimulator {
 
     }
 
+
     public boolean isSouthWall() {
         int x = currentLocation.getX();
         int y = currentLocation.getY();
         return floorPlan.floorLayout.get(x).get(y).wallsPresent.contains(Wall.SOUTH_WALL);
 
     }
+
 
     public boolean isWestWall() {
         int x = currentLocation.getX();
@@ -34,12 +38,14 @@ public class SensorSimulator {
 
     }
 
+
     public boolean isEastWall() {
         int x = currentLocation.getX();
         int y = currentLocation.getY();
         return floorPlan.floorLayout.get(x).get(y).wallsPresent.contains(Wall.EAST_WALL);
 
     }
+
 
     public boolean isWall(Direction direction) {
         if (direction.equals(Direction.EAST)) {
@@ -53,33 +59,36 @@ public class SensorSimulator {
         }
     }
 
-    public boolean isNorthObstacle() {
-        int x = currentLocation.getX();
-        int y = currentLocation.getY();
-        return floorPlan.floorLayout.get(x).get(y).surfaceType.equals(SurfaceType.OBSTACLE);
 
+    private boolean isUntraversableSurfaceType(int x, int y) {
+        if (x < 0 || x >= floorPlan.height || y < 0 || y > floorPlan.width)
+            return true;
+
+        return floorPlan.floorLayout.get(x).get(y).surfaceType.equals(SurfaceType.OBSTACLE)  ||
+               floorPlan.floorLayout.get(x).get(y).surfaceType.equals(SurfaceType.UNDEFINED) ||
+               floorPlan.floorLayout.get(x).get(y).surfaceType.equals(SurfaceType.UNDEFINED_BORDER);
     }
+
+
+    public boolean isNorthObstacle() {
+        return isUntraversableSurfaceType(currentLocation.getX() - 1, currentLocation.getY());
+    }
+
 
     public boolean isSouthObstacle() {
-        int x = currentLocation.getX();
-        int y = currentLocation.getY();
-        return floorPlan.floorLayout.get(x).get(y).surfaceType.equals(SurfaceType.OBSTACLE);
-
+        return isUntraversableSurfaceType(currentLocation.getX() + 1, currentLocation.getY());
     }
+
 
     public boolean isWestObstacle() {
-        int x = currentLocation.getX();
-        int y = currentLocation.getY();
-        return floorPlan.floorLayout.get(x).get(y).surfaceType.equals(SurfaceType.OBSTACLE);
-
+        return isUntraversableSurfaceType(currentLocation.getX(), currentLocation.getY() - 1);
     }
+
 
     public boolean isEastObstacle() {
-        int x = currentLocation.getX();
-        int y = currentLocation.getY();
-        return floorPlan.floorLayout.get(x).get(y).surfaceType.equals(SurfaceType.OBSTACLE);
-
+        return isUntraversableSurfaceType(currentLocation.getX(), currentLocation.getY() + 1);
     }
+
 
     public boolean isObstacle(Direction direction) {
         if (direction.equals(Direction.EAST)) {
@@ -93,32 +102,22 @@ public class SensorSimulator {
         }
     }
 
-    public List<Direction> getTraversableDirections(Location currentLocation) {
+
+    public List<Direction> getTraversableDirections() {
         List<Direction> openDirections = new ArrayList<>();
-        int x = currentLocation.getX();
-        int y = currentLocation.getY();
-        FloorCell cell = floorPlan.floorLayout.get(x).get(y);
-        if (!cell.wallsPresent.contains(Wall.NORTH_WALL) || isObstacle(Direction.NORTH)) {
+
+        if (!isNorthWall() && !isNorthObstacle())
             openDirections.add(Direction.NORTH);
-        }
-        if (!cell.wallsPresent.contains(Wall.EAST_WALL) || isObstacle(Direction.EAST)) {
+
+        if (!isEastWall() && !isEastObstacle())
             openDirections.add(Direction.EAST);
-        }
-        if (!cell.wallsPresent.contains(Wall.SOUTH_WALL) || isObstacle(Direction.SOUTH)) {
+
+        if (!isSouthWall() && !isSouthObstacle())
             openDirections.add(Direction.SOUTH);
-        }
-        if (!cell.wallsPresent.contains(Wall.WEST_WALL) || isObstacle(Direction.WEST)) {
+
+        if (!isWestWall() && !isWestObstacle())
             openDirections.add(Direction.WEST);
-        } else if ((cell.wallsPresent.contains(Wall.NORTH_WALL)
-                && cell.wallsPresent.contains(Wall.SOUTH_WALL)
-                && cell.wallsPresent.contains(Wall.EAST_WALL)
-                && cell.wallsPresent.contains(Wall.WEST_WALL))
-                || (isObstacle(Direction.NORTH)
-                && isObstacle(Direction.SOUTH)
-                && isObstacle(Direction.EAST))
-                && isObstacle(Direction.WEST)) {
-            System.out.println("Error. Clean Sweep is stuck.");
-        }
+
         return openDirections;
     }
 
@@ -136,6 +135,7 @@ public class SensorSimulator {
         return visited;
     }
 
+
     public boolean hasVisited(FloorCell floorCell) {
         if (visited.get(floorCell) >= 1) {
             return true;
@@ -143,6 +143,7 @@ public class SensorSimulator {
             return false;
         }
     }
+
 
     public void printVisitedLocations() {
         for (Map.Entry<FloorCell, Integer> entry : visited.entrySet()) {
@@ -152,26 +153,4 @@ public class SensorSimulator {
                     + " Times Visited: " + entry.getValue());
         }
     }
-
-
-    public void print() {
-        //testing direction-parameterized wall bool
-        /*
-        System.out.println("------------------");
-        System.out.println("Wall to the north? " + isWall(Direction.NORTH));
-        System.out.println("Wall to the south? " + isWall(Direction.SOUTH));
-        System.out.println("Wall to the east? " + isWall(Direction.EAST));
-        System.out.println("Wall to the west? " + isWall(Direction.WEST));
-
-
-         */
-        System.out.println("------------------");
-        //testing output of traversable options
-        System.out.println();
-        System.out.println("The following are traversable directions: " + getTraversableDirections(currentLocation));
-        System.out.println();
-
-        System.out.println("------------------");
-    }
-
 }
