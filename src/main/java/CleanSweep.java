@@ -4,7 +4,7 @@ import java.util.Stack;
 import static java.lang.Thread.sleep;
 
 public class CleanSweep {
-    private double battery;
+    public double battery;
     private double currCapacity;
     private double totalCapacity = 50.0;
     public FloorCell currentLocation;
@@ -138,7 +138,7 @@ public class CleanSweep {
                 moveWest();
                 moveDirection = Direction.WEST;
             }
-            tempPrev = previousLocation;
+            previousLocation = tempPrev;
         }
         return moveDirection;
     }
@@ -249,6 +249,7 @@ public class CleanSweep {
         FloorNode startNode = new FloorNode(null, new Location(0,0), null); //Hard code start location for now
         FloorNode previousNode = startNode;
 
+
         traverseStack.push(startNode);
 
         while (!traverseStack.isEmpty()) {
@@ -266,17 +267,18 @@ public class CleanSweep {
                     }
                 }
             }
-
+            previousLocation = currentLocation;
             move(currentNode); //Move robot to cell corresponding to the current node
+            suckUpDirt();
+            useBattery();
             visitedCells.add(currentLocation);
-
-            // Do work here
-            //suckUpDirt();
 
             if(currentNode != startNode) {
                 while(!canTraverseStack()) {
                     currentNode = currentNode.parent;
                     move(currentNode);
+                    suckUpDirt();
+                    useBattery();
                 }
             }
 
