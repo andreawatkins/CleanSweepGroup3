@@ -2,7 +2,13 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        FloorPlan.twoRoomsFloorPlan(4, 6, 3, 4);
+//        FloorPlan twoRooms = FloorPlan.twoRoomsFloorPlan(3, 2, 4, 6);
+//        twoRooms.print(FloorPlan::printDirtAmount);
+
+        // FloorPlan threeRooms = FloorPlan.threeRoomsFloorPlan(3, 2, 4, 6, 2, 4);
+        FloorPlan threeRooms = FloorPlan.threeRoomsFloorPlan(4, 5, 2, 3, 2, 8);
+
+        threeRooms.print(FloorPlan::printDirtAmount);
 
         /*
         int height, width;
