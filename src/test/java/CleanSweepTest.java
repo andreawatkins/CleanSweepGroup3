@@ -33,7 +33,7 @@ public class CleanSweepTest {
         SensorSimulator sensor = new SensorSimulator(oneRoom, startingLocation);
         CleanSweep cs = new CleanSweep(50.2, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
         cs.turnOn();
-        Assertions.assertEquals(State.LOW_BATTERY, cs.currentState);
+        Assertions.assertEquals(State.CHARGING, cs.currentState);
 
     }
 
