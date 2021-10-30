@@ -23,8 +23,7 @@ public class CleanSweepTest {
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
         double initBattery = cs.battery;
         cs.turnOn();
-        cs.useBattery();
-        Assertions.assertNotEquals(initBattery, cs.battery);
+        Assertions.assertTrue(initBattery>cs.battery);
     }
 
     @Test
@@ -32,7 +31,9 @@ public class CleanSweepTest {
         FloorPlan oneRoom = FloorPlan.oneRoomFloorPlan(3, 3);
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(oneRoom, startingLocation);
-        CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
+        CleanSweep cs = new CleanSweep(50.2, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
+        cs.turnOn();
+        Assertions.assertEquals(State.LOW_BATTERY, cs.currentState);
 
     }
 
