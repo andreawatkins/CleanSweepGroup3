@@ -66,13 +66,6 @@ public class FloorPlan {
     }
 
 
-// TODO
-//    public static FloorPlan twoRoomsFloorPlan(int firstRoomWidth, int firstRoomHeight, int secondRoomWidth, int secondRoomHeight) {
-//        FloorPlan firstRoom = FloorPlan.oneRoomFloorPlan(firstRoomWidth, firstRoomHeight);
-//        FloorPlan secondRoom = FloorPlan.oneRoomFloorPlan(secondRoomWidth, secondRoomHeight);
-//    }
-
-
     public static String printDirtAmount(FloorCell floorCell) {
         switch (floorCell.surfaceType) {
             case CHARGING_STATION:

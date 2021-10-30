@@ -1,7 +1,10 @@
+import java.util.ArrayList;
+import java.util.Stack;
+
 import static java.lang.Thread.sleep;
 
 public class CleanSweep {
-    private double battery;
+    public double battery;
     private double currCapacity;
     private double totalCapacity = 50.0;
     public FloorCell currentLocation;
@@ -10,6 +13,8 @@ public class CleanSweep {
     private CleanSweep cleanSweep = null;
     public State currentState;
 
+    Stack<FloorNode> traverseStack = new Stack<>();
+    ArrayList<FloorCell> visitedCells = new ArrayList<>();
 
     public CleanSweep(Double battery, double currCapacity, SensorSimulator sensors, FloorCell currentLocation, FloorCell previousLocation) {
         this.sensors = sensors;
@@ -32,45 +37,45 @@ public class CleanSweep {
 
 
     public double useBattery() {
-        if (isOn()) {
-            double batteryDec = 0;
 
-            if (currentLocation.surfaceType == SurfaceType.BARE_FLOOR)
-                batteryDec = 1;
-            if (currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET)
-                batteryDec = 2;
-            else if (currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET)
-                batteryDec = 3;
+        double batteryDec = 0;
 
-            if (previousLocation == currentLocation) {
-                battery = battery - batteryDec;
-            } else {
-                if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
-                    battery = battery - ((batteryDec + 2) / 2);
-                if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
-                    battery = battery - ((batteryDec + 3) / 2);
-                if ((currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.BARE_FLOOR))
-                    battery = battery - ((batteryDec + 1) / 2);
-                if ((currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
-                    battery = battery - ((batteryDec + 3) / 2);
-                if ((currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.BARE_FLOOR))
-                    battery = battery - ((batteryDec + 1) / 2);
-                if ((currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
-                    battery = battery - ((batteryDec + 2) / 2);
+        if (currentLocation.surfaceType == SurfaceType.BARE_FLOOR)
+            batteryDec = 1;
+        if (currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET)
+            batteryDec = 2;
+        else if (currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET)
+            batteryDec = 3;
+
+        if (previousLocation.surfaceType == currentLocation.surfaceType) { // previous location was charging station
+            battery = battery - batteryDec;
+        } else {
+            if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
+                battery = battery - ((batteryDec + 2) / 2);
+            if ((currentLocation.surfaceType == SurfaceType.BARE_FLOOR) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
+                battery = battery - ((batteryDec + 3) / 2);
+            if ((currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.BARE_FLOOR))
+                battery = battery - ((batteryDec + 1) / 2);
+            if ((currentLocation.surfaceType == SurfaceType.LOW_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET))
+                battery = battery - ((batteryDec + 3) / 2);
+            if ((currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.BARE_FLOOR))
+                battery = battery - ((batteryDec + 1) / 2);
+            if ((currentLocation.surfaceType == SurfaceType.HIGH_PILE_CARPET) && (previousLocation.surfaceType == SurfaceType.LOW_PILE_CARPET))
+                battery = battery - ((batteryDec + 2) / 2);
 
 
-            }
-            if (needToCharge()) {
-                System.out.println(this.currentState);
-                return battery;
-            } else System.out.println("Battery: " + String.format("%.1f", (battery / 250) * 100) + "% left");
         }
+        if (needToCharge()) {
+            System.out.println(this.currentState);
+            returnToCharger();
+        } else System.out.println("Battery: " + String.format("%.1f", (battery / 250) * 100) + "% left");
+
         return battery;
-    }
+}
 
     public boolean needToCharge() {
         if (battery < .20 * 250) {
-            this.currentState = State.LOW_BATTERY;
+            currentState = State.LOW_BATTERY;
             System.out.println("Need to charge! Low Battery!");
 
             return true;
@@ -92,28 +97,55 @@ public class CleanSweep {
 
     }
 
-    public void move(Direction direction) {
-        sensors.visitedCells(sensors.floorPlan);
+    public void move(FloorNode destination) {
         FloorCell tempPrev = currentLocation;
+        if (isOn()) {
+            if (destination.onGrid.x > currentLocation.rowIndex) {
+                moveSouth();
+            } else if (destination.onGrid.x < currentLocation.rowIndex) {
+                moveNorth();
+            }
+
+            if (destination.onGrid.y > currentLocation.colIndex) {
+                moveEast();
+            } else if (destination.onGrid.y < currentLocation.colIndex) {
+                moveWest();
+            }
+            previousLocation = tempPrev;
+        }
+        else System.out.println("Current State is : " +currentState);
+
+    }
+
+    public Direction moveDirection(Direction direction) {
+        Direction moveDirection = null;
+
+
         if (isOn()) {
             if (direction == Direction.SOUTH) {
                 moveSouth();
+                moveDirection = Direction.SOUTH;
             }
 
             if (direction == Direction.EAST) {
                 moveEast();
+                moveDirection = Direction.EAST;
             }
 
             if (direction == Direction.NORTH) {
                 moveNorth();
+                moveDirection = Direction.NORTH;
             }
 
             if (direction == Direction.WEST) {
                 moveWest();
+                moveDirection = Direction.WEST;
             }
-            tempPrev = previousLocation;
+
         }
+        return moveDirection;
     }
+
 
     public void moveNorth() {
         if (isOn()) {
@@ -162,6 +194,7 @@ public class CleanSweep {
     public void updateCurrentCell() {
         int x = sensors.currentLocation.x;
         int y = sensors.currentLocation.y;
+
         currentLocation = sensors.floorPlan.floorLayout.get(x).get(y);
     }
 
@@ -184,7 +217,7 @@ public class CleanSweep {
                 System.out.println();
 
                 if (!sensors.isWall(direction)) {
-                    move(direction);
+                    moveDirection(direction);
                 } else {
                     moveEast();
 
@@ -211,12 +244,124 @@ public class CleanSweep {
         //just a print test to confirm this works.
         //you can also stick this inside of the loop and get an updated map for each cell
 
+        System.out.println("Has CleanSweep visited floorCell 1,1? : " + sensors.hasVisited(sensors.floorPlan.floorLayout.get(1).get(1)));
+
+    }
+
+    public void traverseFloor() throws InterruptedException {
+        if (isOn()) {
+            FloorNode startNode = new FloorNode(null, new Location(0, 0), null); // Hard code start location for now
+            FloorNode previousNode = startNode;
+
+            traverseStack.push(startNode);
+
+            while (!traverseStack.isEmpty() && currentState != State.CHARGING) {
+                FloorNode currentNode = traverseStack.pop();
+                currentNode.parent = previousNode;
+
+                for (Direction movingDirection : sensors.getTraversableDirections(currentNode.onGrid)) {
+                    FloorCell cellOption = nextCell(currentNode, movingDirection);
+                    FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
+
+                    if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption)) {
+                        if (cellOption.surfaceType != SurfaceType.OBSTACLE) {
+                            traverseStack.push(nodeOption);
+                        }
+                    }
+                }
+
+                move(currentNode); // Move robot to cell corresponding to the current node
+
+                System.out.println();
+                sensors.floorPlan.print(FloorPlan::printDirtAmount);
+                System.out.format("Current Location: (%d, %d)\n", sensors.currentLocation.x, sensors.currentLocation.y);
+
+                sleep(1000);
+                suckUpDirt();
+
+                sleep(1000);
+                useBattery();
+
+                visitedCells.add(currentLocation);
+
+                if (currentNode != startNode) {
+                    while (!canTraverseStack() && currentState != State.CHARGING) {
+                        currentNode = currentNode.parent;
+                        move(currentNode);
+                        suckUpDirt();
+                        useBattery();
+                    }
+                }
+
+                previousNode = currentNode;
+            }
+        }
+        else returnToCharger();
+    }
+
+    public void returnToCharger() {
+        System.out.println("Low Battery, Returning to Charger");
+        currentState = State.CHARGING;
+
+//        while(!traverseStack.isEmpty()){
+//            Location togo = traversalStack.pop();
+//            int
+     //  }
+
+    }
+
+    public FloorCell nextCell(FloorNode parent, Direction travelingDirection) {
+        int x;
+        int y;
+
+        if (travelingDirection == Direction.NORTH) {
+            x = parent.onGrid.x - 1;
+            y = parent.onGrid.y;
+        }
+        else if (travelingDirection == Direction.EAST) {
+            x = parent.onGrid.x;
+            y = parent.onGrid.y + 1;
+        }
+        else if (travelingDirection == Direction.SOUTH) {
+            x = parent.onGrid.x + 1;
+            y = parent.onGrid.y;
+        }
+        else {
+            x = parent.onGrid.x;
+            y = parent.onGrid.y - 1;
+        }
+
+        return sensors.floorPlan.floorLayout.get(x).get(y);
+    }
+
+    private boolean traverseStackContains(FloorNode nodeOption) {
+        for (FloorNode stackNode : traverseStack) {
+            if (stackNode.onGrid.x == nodeOption.onGrid.x && stackNode.onGrid.y == nodeOption.onGrid.y) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean canTraverseStack() {
+        if (traverseStack.isEmpty()) {
+            return true;
+        }
+
+        FloorNode stackNode = traverseStack.lastElement(); //Top of the traverse stack
+
+        int diffX = Math.abs(stackNode.onGrid.x - currentLocation.rowIndex);
+        int diffY = Math.abs(stackNode.onGrid.y - currentLocation.colIndex);
+
+        return (diffX == 0 && diffY == 1) || (diffY == 0 && diffX == 1);
     }
 
     public void turnOn() {
         currentState = State.ON;
+
         try {
-            zigZag();
+            traverseFloor();
         } catch (InterruptedException e) {
             System.out.println("Clean Sweep cannot be turned on. Please contact customer support.");
             e.printStackTrace();
