@@ -47,6 +47,13 @@ public class FloorCell {
         this.wallsPresent = wallsPresent;
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
-        this.location = new Location (rowIndex, colIndex);
+        this.location = new Location(rowIndex, colIndex);
+    }
+
+
+    void updateRowAndCol(int newRow, int newCol) {
+        this.rowIndex = newRow;
+        this.colIndex = newCol;
+        this.location = new Location(newRow, newCol);
     }
 }
