@@ -101,7 +101,7 @@ public class CleanSweep {
 
                     if (((currCapacity / totalCapacity) * 100) >= 100) {
                         //currentState= State.AT_CAPACITY;
-
+                        System.out.println("Capacity is Full, Please Empty CleanSweep");
                         throw new FullCapacityException();
                     }
                     else {
@@ -345,6 +345,7 @@ public class CleanSweep {
             System.out.println();
             sensors.floorPlan.print(FloorPlan::printDirtAmount);
             System.out.println("DONE!");
+            returnToCharger();
         }
 
     }
@@ -353,7 +354,7 @@ public class CleanSweep {
     public void returnToCharger() throws InterruptedException {
 
         Stack<FloorNode> toChargingStation = new Stack<>();
-
+        System.out.println("Returning to Charging Station!");
         while (currentNode.parent != null) { // if the parent is null, we are at the root of the tree, aka the charging station
             toChargingStation.push(currentNode); // keep track of every step of the way so we can go back eventually
             currentNode = currentNode.parent;
