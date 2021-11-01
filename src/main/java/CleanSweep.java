@@ -39,7 +39,7 @@ public class CleanSweep {
     }
 
 
-    public double useBattery() {
+    public double useBattery() throws LowBatteryException {
 
         double batteryDec = 0;
 
@@ -74,9 +74,10 @@ public class CleanSweep {
     }
 
 
-    public boolean needToCharge() {
+    public boolean needToCharge() throws LowBatteryException {
         if (battery < .20 * 250) {
             currentState = State.LOW_BATTERY;
+            // throws LowBatteryException
             System.out.println("Need to charge! Low Battery!");
 
             return true;
@@ -84,7 +85,7 @@ public class CleanSweep {
     }
 
 
-    public void suckUpDirt() throws InterruptedException {
+    public void suckUpDirt() throws FullCapacityException, InterruptedException {
         if (isOn()) {
             while (currentLocation.dirtAmount > 0 && (((currCapacity / totalCapacity) * 100)<100)) {
                 System.out.println("Cleaning... " + currentLocation.dirtAmount + " unit" + (currentLocation.dirtAmount == 1 ? "" : "s") + " of dirt left");
@@ -94,6 +95,9 @@ public class CleanSweep {
             }
             if (((currCapacity / totalCapacity) * 100)>= 100){
                 currentState= State.AT_CAPACITY;
+
+                // throws FullCapacityException
+
                 System.out.println(currentState);
             }
         }
@@ -209,7 +213,7 @@ public class CleanSweep {
         currentLocation = sensors.floorPlan.floorLayout.get(x).get(y);
     }
 
-
+/*
     public void zigZag() throws InterruptedException {
         if (isOn()) {
             System.out.println();
@@ -259,7 +263,7 @@ public class CleanSweep {
         System.out.println("Has CleanSweep visited floorCell 1,1? : " + sensors.hasVisited(sensors.floorPlan.floorLayout.get(1).get(1)));
 
     }
-
+*/
 
     public void traverseFloor() throws InterruptedException, FullCapacityException, LowBatteryException {
         if (isOn()) {
@@ -269,54 +273,53 @@ public class CleanSweep {
             traverseStack.push(startNode);
 
             while (!traverseStack.isEmpty()) {
+                try {
+                    FloorNode currentNode = traverseStack.pop();
 
-                FloorNode currentNode = traverseStack.pop();
-                if(currentState != State.LOW_BATTERY && currentState != State.AT_CAPACITY ) {
-
-                // MOVE FROM THE PREVIOUS NODE TO THE CURRENT NODE
-                // PREVIOUS NODE - last node processed
-                // CURRENT NODE  - node we are backtracking to
-                if (currentNode != startNode) {
-                    if (currentNode.parent != previousNode) { // start node was the previous node
-                        System.out.println("\nBacktracking...");
-                        FloorNode intermediaryNode = previousNode.parent;
-                        moveToAdjacentNode(intermediaryNode);
-
-                        while (intermediaryNode != currentNode.parent) {
-                            intermediaryNode = intermediaryNode.parent;
+                    // MOVE FROM THE PREVIOUS NODE TO THE CURRENT NODE
+                    // PREVIOUS NODE - last node processed
+                    // CURRENT NODE  - node we are backtracking to
+                    if (currentNode != startNode) {
+                        if (currentNode.parent != previousNode) { // start node was the previous node
+                            System.out.println("\nBacktracking...");
+                            FloorNode intermediaryNode = previousNode.parent;
                             moveToAdjacentNode(intermediaryNode);
+
+                            while (intermediaryNode != currentNode.parent) {
+                                intermediaryNode = intermediaryNode.parent;
+                                moveToAdjacentNode(intermediaryNode);
+                            }
                         }
+
+                        moveToAdjacentNode(currentNode);
                     }
 
-                    moveToAdjacentNode(currentNode);
+                    // WORK DONE ON CURRENT NODE HERE:
+                    System.out.println();
+                    sensors.floorPlan.print(FloorPlan::printDirtAmount);
+                    System.out.println(String.format("Current Location: (%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
+
+                    sleep(1000);
+                    suckUpDirt();
+                    useBattery();
+                    visitedCells.add(currentLocation);
+                    sleep(1000);
+                    // WORK FINISHED
+
+
+                    for (Direction movingDirection : sensors.getTraversableDirections()) {
+                        FloorCell cellOption = nextCell(currentNode, movingDirection);
+                        FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
+
+                        if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption))
+                            traverseStack.push(nodeOption);
+                    }
+
+                    previousNode = currentNode;
                 }
-
-                // WORK DONE ON CURRENT NODE HERE:
-                System.out.println();
-                sensors.floorPlan.print(FloorPlan::printDirtAmount);
-                System.out.println(String.format("Current Location: (%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
-
-                sleep(1000);
-                suckUpDirt();
-                useBattery();
-                visitedCells.add(currentLocation);
-                sleep(1000);
-            // WORK FINISHED
-
-
-                for (Direction movingDirection : sensors.getTraversableDirections()) {
-                    FloorCell cellOption = nextCell(currentNode, movingDirection);
-                    FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
-
-                    if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption))
-                        traverseStack.push(nodeOption);
+                catch (LowBatteryException | FullCapacityException e) {
+                    returnToCharger();
                 }
-
-                previousNode = currentNode;
-
-
-            }
-                else{ returnToCharger(currentNode); break;}
             }
 
             System.out.println();
@@ -327,7 +330,7 @@ public class CleanSweep {
     }
 
 
-    public void returnToCharger(FloorNode fromNode) {
+    public void returnToCharger() {
 
         if(currentState == State.LOW_BATTERY) {
             System.out.println("Low Battery, Returning to Charger");
@@ -419,13 +422,10 @@ public class CleanSweep {
         }
     }
 }
-class LowBatteryException extends Exception {
-    public LowBatteryException(FloorNode e) {
-        FloorNode fromNode = e;
 
-    }
+class LowBatteryException extends Exception {
 
 }
-class FullCapacityException extends Exception{
-    public FullCapacityException(FloorNode e) {FloorNode fromNode = e; }
+
+class FullCapacityException extends Exception {
 }
