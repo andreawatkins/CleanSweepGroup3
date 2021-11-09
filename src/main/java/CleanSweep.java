@@ -23,13 +23,12 @@ public class CleanSweep {
         this.previousLocation = previousLocation;
         this.battery = battery;
         this.currCapacity = currCapacity;
-
     }
 
 
     public void turnOff() {
         currentState = State.OFF;
-        System.out.println("CleanSweep is shutting down...");
+        System.out.println("Clean Sweep is shutting down...");
         System.exit(0);
     }
 
@@ -99,39 +98,35 @@ public class CleanSweep {
                 }
             }
 
-                    if (((currCapacity / totalCapacity) * 100) >= 100) {
-                        //currentState= State.AT_CAPACITY;
-                        System.out.println("Capacity is Full, Please Empty CleanSweep");
-                        throw new FullCapacityException();
-                    }
-                    else {
-                        System.out.println("Clean!\n");
-                        System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
-                    }
-
-
-
+            if (((currCapacity / totalCapacity) * 100) >= 100) {
+                //currentState= State.AT_CAPACITY;
+                System.out.println("\nCapacity is full!");
+                throw new FullCapacityException();
+            }
+            else {
+                System.out.println("Clean!\n");
+                System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
+            }
         }
-
     }
+
 
     public void charge() throws InterruptedException {
-        while(battery<250){
-            System.out.println("Charging... Battery percent at "+ String.format("%.1f", (battery /250) * 100));
-
-            battery = battery + 10;
-            sleep(200);
+        while (battery <= 250.0) {
+            System.out.println("Charging... battery at " + String.format("%.1f%%", (battery / 250.0) * 100.0));
+            battery += 10.0;
+            sleep(1000);
         }
-        System.out.println("Charge Complete, Powering Down");
-        //turnOff();
 
+        battery = 250.0;
+        System.out.println("Battery at " + String.format("%.1f%%", (battery / 250.0) * 100.0));
     }
 
 
-    public void moveToAdjacentNode(FloorNode destination) {
-        previousLocation = currentLocation;
-
+    public void moveToAdjacentNode(FloorNode destination) throws InterruptedException {
         if (isOn()) {
+            previousLocation = currentLocation;
+
             if (destination.onGrid.x == currentLocation.rowIndex + 1)
                 moveSouth();
             else if (destination.onGrid.x == currentLocation.rowIndex - 1)
@@ -145,6 +140,9 @@ public class CleanSweep {
                 System.out.format("Destination Location: (%d, %d)\n", destination.onGrid.x, destination.onGrid.y);
                 throw new RuntimeException("Very bad, should never happen!");
             }
+
+            currentNode = destination;
+            sleep(1000);
         }
     }
 
@@ -233,57 +231,6 @@ public class CleanSweep {
         currentLocation = sensors.floorPlan.floorLayout.get(x).get(y);
     }
 
-/*
-    public void zigZag() throws InterruptedException {
-        if (isOn()) {
-            System.out.println();
-            sensors.floorPlan.print(FloorPlan::printDirtAmount);
-
-            Direction direction = Direction.SOUTH;
-            sleep(1000);
-            suckUpDirt();
-            sleep(1000);
-            useBattery();
-            sleep(1000);
-
-            System.out.println();
-            sensors.floorPlan.print(FloorPlan::printDirtAmount);
-
-            while (!(sensors.isEastWall() && sensors.isSouthWall())) {
-                System.out.println();
-
-                if (!sensors.isWall(direction)) {
-                    moveDirection(direction);
-                } else {
-                    moveEast();
-
-                    if (direction == Direction.SOUTH) {
-                        direction = Direction.NORTH;
-                    } else {
-                        direction = Direction.SOUTH;
-                    }
-                }
-
-                System.out.println(String.format("Current Location: (%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
-
-                sleep(1000);
-                suckUpDirt();
-                sleep(1000);
-                useBattery();
-                sleep(1000);
-
-                System.out.println();
-                sensors.floorPlan.print(FloorPlan::printDirtAmount);
-            }
-        }
-        sensors.printVisitedLocations();
-        //just a print test to confirm this works.
-        //you can also stick this inside of the loop and get an updated map for each cell
-
-        System.out.println("Has CleanSweep visited floorCell 1,1? : " + sensors.hasVisited(sensors.floorPlan.floorLayout.get(1).get(1)));
-
-    }
-*/
 
     public void traverseFloor() throws InterruptedException, FullCapacityException, LowBatteryException {
         if (isOn()) {
@@ -293,81 +240,107 @@ public class CleanSweep {
             traverseStack.push(startNode);
 
             while (!traverseStack.isEmpty()) {
-                try {
-                   currentNode = traverseStack.pop();
+                FloorNode nodeBacktrackingTo = traverseStack.pop();
 
-                    // MOVE FROM THE PREVIOUS NODE TO THE CURRENT NODE
-                    // PREVIOUS NODE - last node processed
-                    // CURRENT NODE  - node we are backtracking to
-                    if (currentNode != startNode) {
-                        if (currentNode.parent != previousNode) { // start node was the previous node
-                            System.out.println("\nBacktracking...");
-                            FloorNode intermediaryNode = previousNode.parent;
+                // MOVE FROM THE PREVIOUS NODE TO THE CURRENT NODE
+                // PREVIOUS NODE - last node processed
+                // CURRENT NODE  - node we are backtracking to
+                if (nodeBacktrackingTo != startNode) {
+                    if (nodeBacktrackingTo.parent != previousNode) {
+                        System.out.println("\nBacktracking...");
+                        FloorNode intermediaryNode = previousNode.parent;
+                        moveToAdjacentNode(intermediaryNode);
+
+                        while (intermediaryNode != nodeBacktrackingTo.parent) {
+                            intermediaryNode = intermediaryNode.parent;
                             moveToAdjacentNode(intermediaryNode);
-
-                            while (intermediaryNode != currentNode.parent) {
-                                intermediaryNode = intermediaryNode.parent;
-                                moveToAdjacentNode(intermediaryNode);
-                            }
                         }
-
-                        moveToAdjacentNode(currentNode);
                     }
 
-                    // WORK DONE ON CURRENT NODE HERE:
-                    System.out.println();
-                    sensors.floorPlan.print(FloorPlan::printDirtAmount);
-                    System.out.println(String.format("Current Location: (%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
+                    moveToAdjacentNode(nodeBacktrackingTo);
+                }
+                else {
+                    currentNode = nodeBacktrackingTo;
+                }
 
-                    sleep(1000);
+                // WORK DONE ON CURRENT NODE HERE:
+                System.out.println();
+                sensors.floorPlan.print((FloorCell cell) -> {
+                    if (cell.colIndex == currentLocation.colIndex && cell.rowIndex == currentLocation.rowIndex) {
+                        return "*";
+                    }
+                    else
+                        return FloorPlan.printDirtAmount(cell);
+                });
+                System.out.println(String.format("Current Location: (%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
+
+                sleep(1000);
+                visitedCells.add(currentLocation);
+
+                try {
                     suckUpDirt();
                     useBattery();
-                    visitedCells.add(currentLocation);
-                    sleep(1000);
-                    // WORK FINISHED
-
-
-                    for (Direction movingDirection : sensors.getTraversableDirections()) {
-                        FloorCell cellOption = nextCell(currentNode, movingDirection);
-                        FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
-
-                        if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption))
-                            traverseStack.push(nodeOption);
-                    }
-
-                    previousNode = currentNode;
                 }
                 catch (LowBatteryException | FullCapacityException e) {
+                    System.out.printf("Returning to charging station from: (%d, %d)\n", currentNode.onGrid.x, currentNode.onGrid.y);
                     returnToCharger();
+                    System.out.printf("\nResuming cleaning at: (%d, %d)\n", currentNode.onGrid.x, currentNode.onGrid.y);
+
+                    // finish up the job
+                    suckUpDirt();
+                    useBattery();
                 }
+
+
+                sleep(1000);
+                // WORK FINISHED
+
+
+                for (Direction movingDirection : sensors.getTraversableDirections()) {
+                    FloorCell cellOption = nextCell(currentNode, movingDirection);
+                    FloorNode nodeOption = new FloorNode(currentNode, cellOption.location, movingDirection);
+
+                    if (!visitedCells.contains(cellOption) && !traverseStackContains(nodeOption))
+                        traverseStack.push(nodeOption);
+                }
+
+                previousNode = currentNode;
             }
 
             System.out.println();
             sensors.floorPlan.print(FloorPlan::printDirtAmount);
             System.out.println("DONE!");
-            returnToCharger();
         }
-
     }
 
 
     public void returnToCharger() throws InterruptedException {
-
         Stack<FloorNode> toChargingStation = new Stack<>();
-        System.out.println("Returning to Charging Station!");
-        while (currentNode.parent != null) { // if the parent is null, we are at the root of the tree, aka the charging station
-            toChargingStation.push(currentNode); // keep track of every step of the way so we can go back eventually
-            currentNode = currentNode.parent;
-            moveToAdjacentNode(currentNode);
+        System.out.println("\nReturning to charging station.");
+
+        FloorNode tempNode = currentNode;
+
+        while (tempNode.parent != null) { // if the parent is null, we are at the root of the tree, aka the charging station
+            toChargingStation.push(tempNode); // keep track of every step of the way so we can go back eventually
+            tempNode = tempNode.parent;
+            moveToAdjacentNode(tempNode);
         }
 
-       currentState = State.CHARGING;
-
-        System.out.println("At Charger, location : " +currentLocation.rowIndex + "," + currentLocation.colIndex);
+        currentState = State.CHARGING;
         charge();
+        emptyBag();
+        currentState = State.ON;
+
+        while (!toChargingStation.isEmpty())
+            moveToAdjacentNode(toChargingStation.pop());
+    }
 
 
-
+    public void emptyBag() throws InterruptedException {
+        System.out.println("\nEmptying bag...");
+        sleep(1000);
+        System.out.println("Bag emptied!\n");
+        currCapacity = 0;
     }
 
 
@@ -407,20 +380,6 @@ public class CleanSweep {
     }
 
 
-    private boolean canTraverseStack() {
-        if (traverseStack.isEmpty()) {
-            return true;
-        }
-
-        FloorNode stackNode = traverseStack.lastElement(); //Top of the traverse stack
-
-        int diffX = Math.abs(stackNode.onGrid.x - currentLocation.rowIndex);
-        int diffY = Math.abs(stackNode.onGrid.y - currentLocation.colIndex);
-
-        return (diffX == 0 && diffY == 1) || (diffY == 0 && diffX == 1);
-    }
-
-
     public void turnOn() {
         currentState = State.ON;
 
@@ -433,10 +392,12 @@ public class CleanSweep {
     }
 }
 
+
 class LowBatteryException extends Exception {
-public LowBatteryException(){}
+    public LowBatteryException() { }
 }
 
+
 class FullCapacityException extends Exception {
-    public FullCapacityException(){}
+    public FullCapacityException() { }
 }
