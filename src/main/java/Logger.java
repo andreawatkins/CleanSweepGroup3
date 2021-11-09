@@ -87,7 +87,7 @@ public class Logger {
     }
 
     public void logDirtLevel(Location location, FloorCell floorCell){
-        log("Dirt level at: (" + location.x +", " + location.y +") is: " + floorCell.dirtAmount);
+        log("Dirt level at (" + location.x +", " + location.y +") is: " + floorCell.dirtAmount);
     }
 
     public void logBackTracking(){
