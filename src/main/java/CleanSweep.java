@@ -13,6 +13,7 @@ public class CleanSweep {
     public SensorSimulator sensors;
     public State currentState;
     public FloorNode currentNode;
+    public Logger logger = new Logger();
 
     private Stack<FloorNode> traverseStack = new Stack<>();
     private ArrayList<FloorCell> visitedCells = new ArrayList<>();
@@ -31,6 +32,7 @@ public class CleanSweep {
     public void turnOff() {
         currentState = State.OFF;
         System.out.println("Clean Sweep is shutting down...");
+        logger.logEndTime();
         System.exit(0);
     }
 
@@ -71,6 +73,7 @@ public class CleanSweep {
             //System.out.println(this.currentState);
             throw new LowBatteryException();
         } else System.out.println("Battery: " + String.format("%.1f", (battery / 250) * 100) + "% left");
+        logger.logBatteryLevel((battery/250)*100);
 
         return battery;
     }
@@ -80,6 +83,7 @@ public class CleanSweep {
         if (battery < .20 * 250) {
             //currentState = State.LOW_BATTERY;
             System.out.println("Need to charge! Low Battery!");
+            logger.logLowBattery();
             return true;
         }
         return false;
@@ -88,6 +92,7 @@ public class CleanSweep {
 
     public void suckUpDirt() throws FullCapacityException, InterruptedException, LowBatteryException {
         if (isOn()) {
+            logger.logDirtLevel(currentLocation.dirtAmount);
             while (currentLocation.dirtAmount > 0 && (((currCapacity / totalCapacity) * 100)<100)) {
                 try {
                     System.out.println("Cleaning... " + currentLocation.dirtAmount + " unit" + (currentLocation.dirtAmount == 1 ? "" : "s") + " of dirt left");
@@ -103,10 +108,12 @@ public class CleanSweep {
             if (((currCapacity / totalCapacity) * 100) >= 100) {
                 //currentState= State.AT_CAPACITY;
                 System.out.println("\nCapacity is full!");
+                logger.logAtCapacity();
                 throw new FullCapacityException();
             }
             else {
                 System.out.println("Clean!\n");
+                logger.logCurrentCapacity((currCapacity/totalCapacity)*100);
                 System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
             }
         }
@@ -185,6 +192,7 @@ public class CleanSweep {
 
             sensors.currentLocation = new Location(x, y);
             updateCurrentCell();
+            logger.logMoveNorth();
             System.out.format("%-15s%10s\n", "Moved north.", String.format("(%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
         }
     }
@@ -197,6 +205,7 @@ public class CleanSweep {
 
             sensors.currentLocation = new Location(x, y);
             updateCurrentCell();
+            logger.logMoveSouth();
             System.out.format("%-15s%10s\n", "Moved south.", String.format("(%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
         }
     }
@@ -209,6 +218,7 @@ public class CleanSweep {
 
             sensors.currentLocation = new Location(x, y);
             updateCurrentCell();
+            logger.logMoveEast();
             System.out.format("%-15s%10s\n", "Moved east.", String.format("(%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
         }
     }
@@ -221,6 +231,7 @@ public class CleanSweep {
 
             sensors.currentLocation = new Location(x, y);
             updateCurrentCell();
+            logger.logMoveWest();
             System.out.printf("%-15s%10s\n", "Moved west.", String.format("(%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
         }
     }
@@ -279,7 +290,7 @@ public class CleanSweep {
                         return FloorPlan.printDirtAmount(cell);
                 });
                 System.out.println(String.format("Current Location: (%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
-
+                logger.logCurrentLocation(sensors.currentLocation);
                 sleep(1000);
                 visitedCells.add(currentLocation);
 
@@ -326,7 +337,7 @@ public class CleanSweep {
     public void returnToCharger() throws InterruptedException {
         Stack<FloorNode> toChargingStation = new Stack<>();
         System.out.println("\nReturning to charging station.");
-
+        logger.logReturnToCharger();
         FloorNode tempNode = currentNode;
 
         while (tempNode.parent != null) { // if the parent is null, we are at the root of the tree, aka the charging station
@@ -391,7 +402,7 @@ public class CleanSweep {
 
     public void turnOn() {
         currentState = State.ON;
-
+        logger.logStartTime();
         try {
             traverseFloor();
         } catch (InterruptedException | FullCapacityException | LowBatteryException e) {
