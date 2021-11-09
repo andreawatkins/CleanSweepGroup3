@@ -110,7 +110,9 @@ public class Logger {
         log("Clean Sweep is cleaning... Dirt remaining: " + floorCell.dirtAmount);
     }
 
-
+    public void logChargedBattery(){
+        log("Clean Sweep's battery has been fully charged!");
+    }
 
 
 }

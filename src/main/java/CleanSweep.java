@@ -132,6 +132,7 @@ public class CleanSweep {
 
         battery = 250.0;
         System.out.println("Battery at " + String.format("%.1f%%", (battery / 250.0) * 100.0));
+        logger.logChargedBattery();
     }
 
 
