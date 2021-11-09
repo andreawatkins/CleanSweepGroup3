@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import static java.lang.Thread.sleep;
@@ -15,6 +16,7 @@ public class CleanSweep {
 
     private Stack<FloorNode> traverseStack = new Stack<>();
     private ArrayList<FloorCell> visitedCells = new ArrayList<>();
+    private List<Location> chargingStations = new ArrayList<>();
 
 
     public CleanSweep(Double battery, double currCapacity, SensorSimulator sensors, FloorCell currentLocation, FloorCell previousLocation) {
@@ -264,6 +266,10 @@ public class CleanSweep {
                 }
 
                 // WORK DONE ON CURRENT NODE HERE:
+                FloorCell currentCell = sensors.floorPlan.floorLayout.get(currentNode.onGrid.x).get(currentNode.onGrid.y);
+                if (currentCell.surfaceType == SurfaceType.CHARGING_STATION)
+                    chargingStations.add(new Location(currentNode.onGrid.x, currentNode.onGrid.y));
+
                 System.out.println();
                 sensors.floorPlan.print((FloorCell cell) -> {
                     if (cell.colIndex == currentLocation.colIndex && cell.rowIndex == currentLocation.rowIndex) {
@@ -310,6 +316,9 @@ public class CleanSweep {
             System.out.println();
             sensors.floorPlan.print(FloorPlan::printDirtAmount);
             System.out.println("DONE!");
+
+            System.out.println("\nCharging stations found:");
+            System.out.println(chargingStations);
         }
     }
 
