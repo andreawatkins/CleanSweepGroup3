@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Logger {
     private File file;
@@ -27,7 +29,9 @@ public class Logger {
     }
 
     public void logStartTime(){
-        log("Clean Sweep has started cleaning at " + System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = format.format(new Date());
+        log("Clean Sweep has started cleaning at " + date);
     }
 
     public void logEndTime(){
@@ -84,6 +88,14 @@ public class Logger {
 
     public void logBackTracking(){
         log("Clean Sweep is backtracking...");
+    }
+
+    public void chargingStationFound(Location location){
+        log("Charging station found at: " + location.getX() + ", " + location.getY());
+    }
+
+    public void cellHasBeenCleaned(Location location){
+        log("Floor Cell at: " + location.getX() + ", " + location.getY() + " has been cleaned!");
     }
 
 

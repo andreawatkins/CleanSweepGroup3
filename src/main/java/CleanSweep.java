@@ -113,6 +113,7 @@ public class CleanSweep {
             }
             else {
                 System.out.println("Clean!\n");
+                logger.cellHasBeenCleaned(currentLocation.location);
                 logger.logCurrentCapacity((currCapacity/totalCapacity)*100);
                 System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
             }
