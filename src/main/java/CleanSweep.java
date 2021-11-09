@@ -97,6 +97,7 @@ public class CleanSweep {
             while (currentLocation.dirtAmount > 0 && (((currCapacity / totalCapacity) * 100)<100)) {
                 try {
                     System.out.println("Cleaning... " + currentLocation.dirtAmount + " unit" + (currentLocation.dirtAmount == 1 ? "" : "s") + " of dirt left");
+                    logger.logCleaningOutput(currentLocation);
                     currentLocation.dirtAmount--;
                     useBattery();
                     currCapacity++;
@@ -165,21 +166,25 @@ public class CleanSweep {
             if (direction == Direction.SOUTH) {
                 moveSouth();
                 moveDirection = Direction.SOUTH;
+                logger.logMoveSouth();
             }
 
             if (direction == Direction.EAST) {
                 moveEast();
                 moveDirection = Direction.EAST;
+                logger.logMoveEast();
             }
 
             if (direction == Direction.NORTH) {
                 moveNorth();
                 moveDirection = Direction.NORTH;
+                logger.logMoveNorth();
             }
 
             if (direction == Direction.WEST) {
                 moveWest();
                 moveDirection = Direction.WEST;
+                logger.logMoveWest();
             }
         }
 
@@ -263,6 +268,7 @@ public class CleanSweep {
                 if (nodeBacktrackingTo != startNode) {
                     if (nodeBacktrackingTo.parent != previousNode) {
                         System.out.println("\nBacktracking...");
+                        logger.logBackTracking();
                         FloorNode intermediaryNode = previousNode.parent;
                         moveToAdjacentNode(intermediaryNode);
 
@@ -331,7 +337,9 @@ public class CleanSweep {
             System.out.println("DONE!");
 
             System.out.println("\nCharging stations found:");
+            logger.logChargingStationFound(currentLocation.location);
             System.out.println(chargingStations);
+            turnOff();
         }
     }
 

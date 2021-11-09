@@ -14,6 +14,7 @@ public class Logger {
         try{
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write("burgertime USA");
+            //this doesn't matter; just creates file
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -36,7 +37,9 @@ public class Logger {
     }
 
     public void logEndTime(){
-        log("Clean Sweep finished cleaning at " + System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = format.format(new Date());
+        log("Clean Sweep finished cleaning at " + date);
     }
 
     public void logMoveNorth(){
@@ -60,11 +63,11 @@ public class Logger {
     }
 
     public void logCurrentCapacity(double capacity){
-        log("Clean Sweep capacity is: " + capacity);
+        log("Clean Sweep's collected dirt level is: " + capacity);
     }
 
     public void logReturnToCharger(){
-        log("Clean Sweep is returning to charger");
+        log("Clean Sweep is returning to charger...");
     }
 
     public void logCharging(){
@@ -80,7 +83,7 @@ public class Logger {
     }
 
     public void logBatteryLevel(double batteryLevel){
-        log("Clean Sweep battery level is: " + batteryLevel);
+        log("Clean Sweep's battery level is: " + batteryLevel);
     }
 
     public void logDirtLevel(Location location, FloorCell floorCell){
@@ -91,8 +94,8 @@ public class Logger {
         log("Clean Sweep is backtracking...");
     }
 
-    public void chargingStationFound(Location location){
-        log("Charging station found at: (" + location.getX() + ", " + location.getY()+")");
+    public void logChargingStationFound(Location location){
+        log("Charging station found at: (" + location.getX() + ", " + location.getY()+") !");
     }
 
     public void logCellHasBeenCleaned(Location location){
@@ -100,8 +103,14 @@ public class Logger {
     }
 
     public void logBinHasBeenEmptied(){
-        log("Bin has been emptied! Clean Sweep is ready to continue cleaning.");
+        log("Clean Sweep's bin has been emptied! Clean Sweep is ready to continue cleaning.");
     }
+
+    public void logCleaningOutput(FloorCell floorCell){
+        log("Clean Sweep is cleaning... Dirt remaining: " + floorCell.dirtAmount);
+    }
+
+
 
 
 }
