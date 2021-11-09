@@ -79,7 +79,7 @@ public class Logger {
     }
 
     public void logCurrentLocation(Location location){
-        log("Clean Sweep is at: " + location.getX() + ", " + location.getY());
+        log("Clean Sweep is at cell: " + location.getX() + ", " + location.getY());
     }
 
     public void logBatteryLevel(double batteryLevel){
