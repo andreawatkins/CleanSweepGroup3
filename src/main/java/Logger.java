@@ -4,8 +4,6 @@ import java.io.IOException;
 
 public class Logger {
     private File file;
-    private SensorSimulator sensorSimulator;
-    private CleanSweep cleanSweep;
 
     public Logger(){
         //pass user email or UUID as param to make file name unique
@@ -80,11 +78,13 @@ public class Logger {
         log("Clean Sweep battery level is: " + batteryLevel);
     }
 
-    public void logDirtLevel(int floorCell){
-        log("Dirt level at: " + cleanSweep.currentLocation + " is: " + cleanSweep.currentLocation.dirtAmount);
+    public void logDirtLevel(Location location, FloorCell floorCell){
+        log("Dirt level at: " + location.x +", " + location.y +" is: " + floorCell.dirtAmount);
     }
 
-
+    public void logBackTracking(){
+        log("Clean Sweep is backtracking...");
+    }
 
 
 }

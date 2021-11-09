@@ -92,7 +92,7 @@ public class CleanSweep {
 
     public void suckUpDirt() throws FullCapacityException, InterruptedException, LowBatteryException {
         if (isOn()) {
-            logger.logDirtLevel(currentLocation.dirtAmount);
+            logger.logDirtLevel(currentLocation.location, currentLocation);
             while (currentLocation.dirtAmount > 0 && (((currCapacity / totalCapacity) * 100)<100)) {
                 try {
                     System.out.println("Cleaning... " + currentLocation.dirtAmount + " unit" + (currentLocation.dirtAmount == 1 ? "" : "s") + " of dirt left");
