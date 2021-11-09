@@ -13,7 +13,7 @@ public class CleanSweep {
     public SensorSimulator sensors;
     public State currentState;
     public FloorNode currentNode;
-    public Logger logger = new Logger();
+    public Logger logger = new Logger("bob.dobalina@gmail.com_");
 
     private Stack<FloorNode> traverseStack = new Stack<>();
     private ArrayList<FloorCell> visitedCells = new ArrayList<>();
@@ -113,7 +113,7 @@ public class CleanSweep {
             }
             else {
                 System.out.println("Clean!\n");
-                logger.cellHasBeenCleaned(currentLocation.location);
+                logger.logCellHasBeenCleaned(currentLocation.location);
                 logger.logCurrentCapacity((currCapacity/totalCapacity)*100);
                 System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
             }
@@ -361,6 +361,7 @@ public class CleanSweep {
         System.out.println("\nEmptying bag...");
         sleep(1000);
         System.out.println("Bag emptied!\n");
+        logger.logBinHasBeenEmptied();
         currCapacity = 0;
     }
 

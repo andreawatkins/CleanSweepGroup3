@@ -7,9 +7,10 @@ import java.util.Date;
 public class Logger {
     private File file;
 
-    public Logger(){
-        //pass user email or UUID as param to make file name unique
-        file = new File("cleanSweepLog.txt");
+    public Logger(String userEmail){
+        //pass user email or UUID from object as param to make file name unique
+        //for now just a string
+        file = new File(userEmail+"cleanSweepLog.txt");
         try{
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write("");
@@ -83,7 +84,7 @@ public class Logger {
     }
 
     public void logDirtLevel(Location location, FloorCell floorCell){
-        log("Dirt level at: " + location.x +", " + location.y +" is: " + floorCell.dirtAmount);
+        log("Dirt level at: (" + location.x +", " + location.y +") is: " + floorCell.dirtAmount);
     }
 
     public void logBackTracking(){
@@ -91,11 +92,15 @@ public class Logger {
     }
 
     public void chargingStationFound(Location location){
-        log("Charging station found at: " + location.getX() + ", " + location.getY());
+        log("Charging station found at: (" + location.getX() + ", " + location.getY()+")");
     }
 
-    public void cellHasBeenCleaned(Location location){
-        log("Floor Cell at: " + location.getX() + ", " + location.getY() + " has been cleaned!");
+    public void logCellHasBeenCleaned(Location location){
+        log("Floor Cell at: (" + location.getX() + ", " + location.getY() + ") has been cleaned!");
+    }
+
+    public void logBinHasBeenEmptied(){
+        log("Bin has been emptied! Clean Sweep is ready to continue cleaning.");
     }
 
 
