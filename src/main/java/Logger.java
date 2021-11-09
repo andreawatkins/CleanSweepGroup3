@@ -13,7 +13,7 @@ public class Logger {
         file = new File(userEmail+"cleanSweepLog.txt");
         try{
             FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write("");
+            fileWriter.write("burgertime USA");
         } catch (IOException e) {
             e.printStackTrace();
         }

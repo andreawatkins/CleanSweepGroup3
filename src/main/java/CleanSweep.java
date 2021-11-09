@@ -14,6 +14,7 @@ public class CleanSweep {
     public State currentState;
     public FloorNode currentNode;
     public Logger logger = new Logger("bob.dobalina@gmail.com_");
+    //Maybe this should be an additional argument at run time
 
     private Stack<FloorNode> traverseStack = new Stack<>();
     private ArrayList<FloorCell> visitedCells = new ArrayList<>();
