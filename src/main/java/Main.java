@@ -62,10 +62,10 @@ public class Main {
 
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(floorPlan, startingLocation);
-
-        CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0));
-        cs.turnOn();
         User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
+        Logger logger = new Logger(aw.username);
+        CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0), logger);
+        cs.turnOn();
     }
 
 

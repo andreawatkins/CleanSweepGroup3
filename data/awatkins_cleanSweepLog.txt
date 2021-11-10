@@ -1,0 +1,34 @@
+Clean Sweep has started cleaning at 2021-11-09 22:02:26
+Clean Sweep is at cell: 0, 0
+Dirt level at (0, 0) is: 0
+Floor Cell at: (0, 0) has been cleaned!
+Clean Sweep's collected dirt level is: 0.0% full
+Clean Sweep's battery level is: 100.0%
+Clean Sweep moved South
+Clean Sweep is at cell: 1, 0
+Dirt level at (1, 0) is: 2
+Clean Sweep is cleaning... Dirt remaining: 2
+Clean Sweep's battery level is: 99.2%
+Clean Sweep is cleaning... Dirt remaining: 1
+Clean Sweep's battery level is: 98.4%
+Floor Cell at: (1, 0) has been cleaned!
+Clean Sweep's collected dirt level is: 4.0% full
+Clean Sweep's battery level is: 97.6%
+Clean Sweep is backtracking...
+Clean Sweep moved North
+Clean Sweep moved East
+Clean Sweep is at cell: 0, 1
+Dirt level at (0, 1) is: 3
+Clean Sweep is cleaning... Dirt remaining: 3
+Clean Sweep's battery level is: 96.8%
+Clean Sweep is cleaning... Dirt remaining: 2
+Clean Sweep's battery level is: 96.0%
+Clean Sweep is cleaning... Dirt remaining: 1
+Clean Sweep's battery level is: 95.2%
+Floor Cell at: (0, 1) has been cleaned!
+Clean Sweep's collected dirt level is: 10.0% full
+Clean Sweep's battery level is: 94.4%
+Charging station found at: (0, 1) !
+Clean Sweep finished cleaning at 2021-11-09 22:02:41
+
+
