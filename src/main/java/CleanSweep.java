@@ -75,7 +75,7 @@ public class CleanSweep {
             //System.out.println(this.currentState);
             throw new LowBatteryException();
         } else System.out.println("Battery: " + String.format("%.1f", (battery / 250) * 100) + "% left");
-        logger.logBatteryLevel((battery/250)*100);
+        logger.logBatteryLevel(String.format("%.1f", (battery / 250) * 100) + "%");
 
         return battery;
     }
@@ -117,7 +117,7 @@ public class CleanSweep {
             else {
                 System.out.println("Clean!\n");
                 logger.logCellHasBeenCleaned(currentLocation.location);
-                logger.logCurrentCapacity((currCapacity/totalCapacity)*100);
+                logger.logCurrentCapacity(currCapacity, totalCapacity);
                 System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
             }
         }

@@ -65,8 +65,8 @@ public class Logger {
         log("Clean Sweep is at dirt capacity");
     }
 
-    public void logCurrentCapacity(double capacity){
-        log("Clean Sweep's collected dirt level is: " + capacity);
+    public void logCurrentCapacity(double currCapacity, double totalCapacity){
+        log("Clean Sweep's collected dirt level is: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
     }
 
     public void logReturnToCharger(){
@@ -85,7 +85,7 @@ public class Logger {
         log("Clean Sweep is at cell: " + location.getX() + ", " + location.getY());
     }
 
-    public void logBatteryLevel(double batteryLevel){
+    public void logBatteryLevel(String batteryLevel){
         log("Clean Sweep's battery level is: " + batteryLevel);
     }
 
