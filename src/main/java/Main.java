@@ -65,5 +65,8 @@ public class Main {
 
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0));
         cs.turnOn();
+        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
     }
+
+
 }
