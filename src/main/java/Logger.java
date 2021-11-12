@@ -116,6 +116,4 @@ public class Logger {
     public void logChargedBattery(){
         log("Clean Sweep's battery has been fully charged!");
     }
-
-
 }
