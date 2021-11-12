@@ -1,19 +1,16 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
     private File file;
 
-    public Logger(String userEmail){
-        //pass user email or UUID from object as param to make file name unique
-        //for now just a string
-        file = new File(userEmail+"cleanSweepLog.txt");
+    public Logger(String username){
+        file = new File("CleanSweepGroup3/data/"+username+"_cleanSweepLog.txt");
+
         try{
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write("burgertime USA");
+            FileWriter fileWriter = new FileWriter(file, true);
+            fileWriter.write("");
             //this doesn't matter; just creates file
         } catch (IOException e) {
             e.printStackTrace();
@@ -22,9 +19,15 @@ public class Logger {
 
     private void log(String message){
         try{
-            FileWriter fileWriter = new FileWriter(file, true);
-            fileWriter.write(message+"\n");
-            fileWriter.close();
+            //FileWriter fileWriter = new FileWriter(file, true);
+            //fileWriter.write(message+"\n");
+            //fileWriter.close();
+            //file = new File(username+"_cleanSweepLog.txt");
+            //FileWriter fileWriter = new FileWriter(file, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter (file, true));
+            PrintWriter printWriter = new PrintWriter(bufferedWriter);
+            printWriter.print(message+"\n");
+            printWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,7 +42,7 @@ public class Logger {
     public void logEndTime(){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = format.format(new Date());
-        log("Clean Sweep finished cleaning at " + date);
+        log("Clean Sweep finished cleaning at " + date + "\n\n");
     }
 
     public void logMoveNorth(){
@@ -62,8 +65,8 @@ public class Logger {
         log("Clean Sweep is at dirt capacity");
     }
 
-    public void logCurrentCapacity(double capacity){
-        log("Clean Sweep's collected dirt level is: " + capacity);
+    public void logCurrentCapacity(double currCapacity, double totalCapacity){
+        log("Clean Sweep's collected dirt level is: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
     }
 
     public void logReturnToCharger(){
@@ -82,7 +85,7 @@ public class Logger {
         log("Clean Sweep is at cell: " + location.getX() + ", " + location.getY());
     }
 
-    public void logBatteryLevel(double batteryLevel){
+    public void logBatteryLevel(String batteryLevel){
         log("Clean Sweep's battery level is: " + batteryLevel);
     }
 
@@ -113,6 +116,4 @@ public class Logger {
     public void logChargedBattery(){
         log("Clean Sweep's battery has been fully charged!");
     }
-
-
 }

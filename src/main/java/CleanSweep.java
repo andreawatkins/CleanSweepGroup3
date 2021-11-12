@@ -13,7 +13,7 @@ public class CleanSweep {
     public SensorSimulator sensors;
     public State currentState;
     public FloorNode currentNode;
-    public Logger logger = new Logger("bob.dobalina@gmail.com_");
+    public Logger logger;
     //Make this an argument at run time to pass user data
 
     private Stack<FloorNode> traverseStack = new Stack<>();
@@ -21,12 +21,13 @@ public class CleanSweep {
     private List<Location> chargingStations = new ArrayList<>();
 
 
-    public CleanSweep(Double battery, double currCapacity, SensorSimulator sensors, FloorCell currentLocation, FloorCell previousLocation) {
+    public CleanSweep(Double battery, double currCapacity, SensorSimulator sensors, FloorCell currentLocation, FloorCell previousLocation, Logger logger) {
         this.sensors = sensors;
         this.currentLocation = currentLocation;
         this.previousLocation = previousLocation;
         this.battery = battery;
         this.currCapacity = currCapacity;
+        this.logger = logger;
     }
 
 
@@ -74,7 +75,7 @@ public class CleanSweep {
             //System.out.println(this.currentState);
             throw new LowBatteryException();
         } else System.out.println("Battery: " + String.format("%.1f", (battery / 250) * 100) + "% left");
-        logger.logBatteryLevel((battery/250)*100);
+        logger.logBatteryLevel(String.format("%.1f", (battery / 250) * 100) + "%");
 
         return battery;
     }
@@ -116,7 +117,7 @@ public class CleanSweep {
             else {
                 System.out.println("Clean!\n");
                 logger.logCellHasBeenCleaned(currentLocation.location);
-                logger.logCurrentCapacity((currCapacity/totalCapacity)*100);
+                logger.logCurrentCapacity(currCapacity, totalCapacity);
                 System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
             }
         }
