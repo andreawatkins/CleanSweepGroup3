@@ -13,7 +13,7 @@ public class CleanSweepTest {
         User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
         Logger logger = new Logger(aw.username);
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0), logger);
-       cs.turnOn();
+       cs.run();
        Assertions.assertSame(cs.currentState, State.ON);
    }
 
@@ -26,7 +26,7 @@ public class CleanSweepTest {
         Logger logger = new Logger(aw.username);
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0), logger);
         double initBattery = cs.battery;
-        cs.turnOn();
+        cs.run();
         Assertions.assertTrue(initBattery>cs.battery);
     }
 
@@ -38,7 +38,7 @@ public class CleanSweepTest {
         User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
         Logger logger = new Logger(aw.username);
         CleanSweep cs = new CleanSweep(50.2, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0), logger);
-        cs.turnOn();
+        cs.run();
         Assertions.assertEquals(State.CHARGING, cs.currentState);
 
     }
@@ -52,7 +52,7 @@ public class CleanSweepTest {
         Logger logger = new Logger(aw.username);
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0), logger);
         double initCapacity = cs.currCapacity;
-        cs.turnOn();
+        cs.run();
         Assertions.assertTrue(initCapacity<cs.currCapacity);
 
     }
@@ -72,7 +72,7 @@ public class CleanSweepTest {
         User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
         Logger logger = new Logger(aw.username);
             CleanSweep cs = new CleanSweep(250.0, 49, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0), logger);
-            cs.turnOn();
+            cs.run();
             Assertions.assertSame(cs.currentState, State.AT_CAPACITY);
 
 
