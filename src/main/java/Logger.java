@@ -4,9 +4,11 @@ import java.util.Date;
 
 public class Logger {
     private File file;
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date = format.format(new Date());
 
     public Logger(String username){
-        file = new File("CleanSweepGroup3/data/"+username+"_cleanSweepLog.txt");
+        file = new File("CleanSweepGroup3/data/"+username+"CleanSweepLog.txt");
 
         try{
             FileWriter fileWriter = new FileWriter(file, true);
@@ -34,51 +36,47 @@ public class Logger {
     }
 
     public void logStartTime(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date = format.format(new Date());
         log("Clean Sweep has started cleaning at " + date);
     }
 
     public void logEndTime(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date = format.format(new Date());
         log("Clean Sweep finished cleaning at " + date + "\n\n");
     }
 
     public void logMoveNorth(){
-        log("Clean Sweep moved North");
+        log("Clean Sweep moved North at "+ date);
     }
 
     public void logMoveSouth(){
-        log("Clean Sweep moved South");
+        log("Clean Sweep moved South at "+ date);
     }
 
     public void logMoveWest(){
-        log("Clean Sweep moved West");
+        log("Clean Sweep moved West at "+ date);
     }
 
     public void logMoveEast(){
-        log("Clean Sweep moved East");
+        log("Clean Sweep moved East at "+ date);
     }
 
     public void logAtCapacity(){
-        log("Clean Sweep is at dirt capacity");
+        log("Clean Sweep is at dirt capacity "+ date);
     }
 
     public void logCurrentCapacity(double currCapacity, double totalCapacity){
-        log("Clean Sweep's collected dirt level is: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
+        log("Clean Sweep's collected dirt level is: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full at "+ date);
     }
 
     public void logReturnToCharger(){
-        log("Clean Sweep is returning to charger...");
+        log("Clean Sweep is returning to charger...at ");
     }
 
     public void logCharging(){
-        log("Clean Sweep is charging...");
+        log("Clean Sweep is charging... at "+ date);
     }
 
     public void logLowBattery(){
-        log("Clean Sweep battery is low");
+        log("Clean Sweep battery is low at "+ date);
     }
 
     public void logCurrentLocation(Location location){
@@ -106,7 +104,7 @@ public class Logger {
     }
 
     public void logBinHasBeenEmptied(){
-        log("Clean Sweep's bin has been emptied! Clean Sweep is ready to continue cleaning.");
+        log("Clean Sweep's bin has been emptied! Clean Sweep is ready to continue cleaning. "+ date);
     }
 
     public void logCleaningOutput(FloorCell floorCell){
