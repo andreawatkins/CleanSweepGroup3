@@ -4,7 +4,7 @@ import java.util.Stack;
 
 import static java.lang.Thread.sleep;
 
-public class CleanSweep {
+public class CleanSweep implements Runnable {
     public double battery;
     double currCapacity;
     double totalCapacity = 50.0;
@@ -461,7 +461,7 @@ public class CleanSweep {
     }
 
 
-    public void turnOn() {
+    public void run() {
         currentState = State.ON;
         if(!(logger == null)) {
             logger.logStartTime();

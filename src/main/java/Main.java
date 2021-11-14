@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
@@ -57,15 +60,18 @@ public class Main {
         floorPlan.print(FloorPlan::printDirtAmount);
         System.out.println();
 
-        System.out.print("Ready to start? (press ENTER) ");
-        new Scanner(System.in).nextLine();
+
 
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(floorPlan, startingLocation);
         User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
         Logger logger = new Logger(aw.username);
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0), logger);
-        cs.turnOn();
+
+        System.out.print("Seconds until start? ");
+        int delay = new Scanner(System.in).nextInt();
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.schedule(cs, delay, TimeUnit.SECONDS);
     }
 
 
