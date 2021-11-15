@@ -90,19 +90,19 @@ public class User{
         System.out.print("Please enter your username to login: ");
         String username = new Scanner(System.in).next();
         if(userExists(username)==null){
-            System.out.println("An account does not exist with that username, press 1 to create an account, q to quit");
+            System.out.print("An account does not exist with that username, press 1 to create an account, q to quit: ");
             String input = new Scanner(System.in).next();
             if (input.equals("1")) {
-                System.out.println("Please enter the following information");
-                System.out.println("First Name: ");
+                System.out.println("\nPlease enter the following information");
+                System.out.print("\tFirst Name: ");
                 String firstName = new Scanner(System.in).next();
-                System.out.println("Last Name: ");
+                System.out.print("\tLast Name: ");
                 String lastName = new Scanner(System.in).next();
-                System.out.println("Zipcode: ");
+                System.out.print("\tZIP Code: ");
                 String zipcode = new Scanner(System.in).next();
-                System.out.println("Clean Sweep 6 digit identification number: ");
+                System.out.print("\tClean Sweep 6-digit identification number: ");
                 String csID = new Scanner(System.in).next();
-                System.out.print("1, 2, or 3 rooms? ");
+                System.out.print("\n1, 2, or 3 rooms? ");
                 String rooms = new Scanner(System.in).next();
                 StringBuilder rooms_sizes = new StringBuilder(rooms);
                 for (int i = 0; i < Integer.parseInt(rooms); ++i) {
