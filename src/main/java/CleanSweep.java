@@ -14,7 +14,6 @@ public class CleanSweep implements Runnable {
     public State currentState;
     public FloorNode currentNode;
     public Logger logger;
-    //Make this an argument at run time to pass user data
 
     private Stack<FloorNode> traverseStack = new Stack<>();
     private ArrayList<FloorCell> visitedCells = new ArrayList<>();
@@ -30,11 +29,21 @@ public class CleanSweep implements Runnable {
         this.logger = logger;
     }
 
+    public CleanSweep (Double battery, double currCapacity, SensorSimulator sensors, FloorCell currentLocation, FloorCell previousLocation) {
+        this.sensors = sensors;
+        this.currentLocation = currentLocation;
+        this.previousLocation = previousLocation;
+        this.battery = battery;
+        this.currCapacity = currCapacity;
+    }
+
 
     public void turnOff() {
         currentState = State.OFF;
         System.out.println("Clean Sweep is shutting down...");
-        logger.logEndTime();
+        if(!(logger == null)) {
+            logger.logEndTime();
+        }
         System.exit(0);
     }
 
@@ -75,8 +84,9 @@ public class CleanSweep implements Runnable {
             //System.out.println(this.currentState);
             throw new LowBatteryException();
         } else System.out.println("Battery: " + String.format("%.1f", (battery / 250) * 100) + "% left");
-        logger.logBatteryLevel(String.format("%.1f", (battery / 250) * 100) + "%");
-
+        if(!(logger == null)) {
+            logger.logBatteryLevel(String.format("%.1f", (battery / 250) * 100) + "%");
+        }
         return battery;
     }
 
@@ -85,7 +95,9 @@ public class CleanSweep implements Runnable {
         if (battery < .20 * 250) {
             //currentState = State.LOW_BATTERY;
             System.out.println("Need to charge! Low Battery!");
-            logger.logLowBattery();
+            if(!(logger == null)) {
+                logger.logLowBattery();
+            }
             return true;
         }
         return false;
@@ -94,11 +106,15 @@ public class CleanSweep implements Runnable {
 
     public void suckUpDirt() throws FullCapacityException, InterruptedException, LowBatteryException {
         if (isOn()) {
-            logger.logDirtLevel(currentLocation.location, currentLocation);
+            if(!(logger == null)) {
+                logger.logDirtLevel(currentLocation.location, currentLocation);
+            }
             while (currentLocation.dirtAmount > 0 && (((currCapacity / totalCapacity) * 100)<100)) {
                 try {
                     System.out.println("Cleaning... " + currentLocation.dirtAmount + " unit" + (currentLocation.dirtAmount == 1 ? "" : "s") + " of dirt left");
-                    logger.logCleaningOutput(currentLocation);
+                    if(!(logger == null)) {
+                        logger.logCleaningOutput(currentLocation);
+                    }
                     currentLocation.dirtAmount--;
                     useBattery();
                     currCapacity++;
@@ -111,13 +127,17 @@ public class CleanSweep implements Runnable {
             if (((currCapacity / totalCapacity) * 100) >= 100) {
                 //currentState= State.AT_CAPACITY;
                 System.out.println("\nCapacity is full!");
-                logger.logAtCapacity();
+                if(!(logger == null)) {
+                    logger.logAtCapacity();
+                }
                 throw new FullCapacityException();
             }
             else {
                 System.out.println("Clean!\n");
-                logger.logCellHasBeenCleaned(currentLocation.location);
-                logger.logCurrentCapacity(currCapacity, totalCapacity);
+                if(!(logger == null)) {
+                    logger.logCellHasBeenCleaned(currentLocation.location);
+                    logger.logCurrentCapacity(currCapacity, totalCapacity);
+                }
                 System.out.println("Capacity: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full");
             }
         }
@@ -133,7 +153,9 @@ public class CleanSweep implements Runnable {
 
         battery = 250.0;
         System.out.println("Battery at " + String.format("%.1f%%", (battery / 250.0) * 100.0));
-        logger.logChargedBattery();
+        if(!(logger == null)) {
+            logger.logChargedBattery();
+        }
     }
 
 
@@ -168,25 +190,33 @@ public class CleanSweep implements Runnable {
             if (direction == Direction.SOUTH) {
                 moveSouth();
                 moveDirection = Direction.SOUTH;
-                logger.logMoveSouth();
+                if(!(logger == null)) {
+                    logger.logMoveSouth();
+                }
             }
 
             if (direction == Direction.EAST) {
                 moveEast();
                 moveDirection = Direction.EAST;
-                logger.logMoveEast();
+                if(!(logger == null)) {
+                    logger.logMoveEast();
+                }
             }
 
             if (direction == Direction.NORTH) {
                 moveNorth();
                 moveDirection = Direction.NORTH;
-                logger.logMoveNorth();
+                if(!(logger == null)) {
+                    logger.logMoveNorth();
+                }
             }
 
             if (direction == Direction.WEST) {
                 moveWest();
                 moveDirection = Direction.WEST;
-                logger.logMoveWest();
+                if(!(logger == null)) {
+                    logger.logMoveWest();
+                }
             }
         }
 
@@ -201,7 +231,9 @@ public class CleanSweep implements Runnable {
 
             sensors.currentLocation = new Location(x, y);
             updateCurrentCell();
-            logger.logMoveNorth();
+            if(!(logger == null)) {
+                logger.logMoveNorth();
+            }
             System.out.format("%-15s%10s\n", "Moved north.", String.format("(%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
         }
     }
@@ -214,7 +246,9 @@ public class CleanSweep implements Runnable {
 
             sensors.currentLocation = new Location(x, y);
             updateCurrentCell();
-            logger.logMoveSouth();
+            if(!(logger == null)) {
+                logger.logMoveSouth();
+            }
             System.out.format("%-15s%10s\n", "Moved south.", String.format("(%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
         }
     }
@@ -227,7 +261,9 @@ public class CleanSweep implements Runnable {
 
             sensors.currentLocation = new Location(x, y);
             updateCurrentCell();
-            logger.logMoveEast();
+            if(!(logger == null)) {
+                logger.logMoveEast();
+            }
             System.out.format("%-15s%10s\n", "Moved east.", String.format("(%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
         }
     }
@@ -240,7 +276,9 @@ public class CleanSweep implements Runnable {
 
             sensors.currentLocation = new Location(x, y);
             updateCurrentCell();
-            logger.logMoveWest();
+            if(!(logger == null)) {
+                logger.logMoveWest();
+            }
             System.out.printf("%-15s%10s\n", "Moved west.", String.format("(%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
         }
     }
@@ -270,7 +308,9 @@ public class CleanSweep implements Runnable {
                 if (nodeBacktrackingTo != startNode) {
                     if (nodeBacktrackingTo.parent != previousNode) {
                         System.out.println("\nBacktracking...");
-                        logger.logBackTracking();
+                        if(!(logger == null)) {
+                            logger.logBackTracking();
+                        }
                         FloorNode intermediaryNode = previousNode.parent;
                         moveToAdjacentNode(intermediaryNode);
 
@@ -300,7 +340,9 @@ public class CleanSweep implements Runnable {
                         return FloorPlan.printDirtAmount(cell);
                 });
                 System.out.println(String.format("Current Location: (%d, %d)", sensors.currentLocation.x, sensors.currentLocation.y));
-                logger.logCurrentLocation(sensors.currentLocation);
+                if(!(logger == null)) {
+                    logger.logCurrentLocation(sensors.currentLocation);
+                }
                 sleep(1000);
                 visitedCells.add(currentLocation);
 
@@ -339,7 +381,9 @@ public class CleanSweep implements Runnable {
             System.out.println("DONE!");
 
             System.out.println("\nCharging stations found:");
-            logger.logChargingStationFound(currentLocation.location);
+            if(!(logger == null)) {
+                logger.logChargingStationFound(currentLocation.location);
+            }
             System.out.println(chargingStations);
             turnOff();
         }
@@ -349,7 +393,9 @@ public class CleanSweep implements Runnable {
     public void returnToCharger() throws InterruptedException {
         Stack<FloorNode> toChargingStation = new Stack<>();
         System.out.println("\nReturning to charging station.");
-        logger.logReturnToCharger();
+        if(!(logger == null)) {
+            logger.logReturnToCharger();
+        }
         FloorNode tempNode = currentNode;
 
         while (tempNode.parent != null) { // if the parent is null, we are at the root of the tree, aka the charging station
@@ -372,7 +418,9 @@ public class CleanSweep implements Runnable {
         System.out.println("\nEmptying bag...");
         sleep(1000);
         System.out.println("Bag emptied!\n");
-        logger.logBinHasBeenEmptied();
+        if(!(logger == null)) {
+            logger.logBinHasBeenEmptied();
+        }
         currCapacity = 0;
     }
 
@@ -415,7 +463,9 @@ public class CleanSweep implements Runnable {
 
     public void run() {
         currentState = State.ON;
-        logger.logStartTime();
+        if(!(logger == null)) {
+            logger.logStartTime();
+        }
         try {
             traverseFloor();
         } catch (InterruptedException | FullCapacityException | LowBatteryException e) {
