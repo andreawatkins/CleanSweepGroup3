@@ -7,7 +7,7 @@ public class Logger {
 
 
     public Logger(String username){
-        file = new File("CleanSweepGroup3/data/" + username + "CleanSweepLog.txt");
+        file = new File("data/" + username + "CleanSweepLog.txt");
 
         try{
             FileWriter fileWriter = new FileWriter(file, true);
