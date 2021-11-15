@@ -8,15 +8,30 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         int numRooms;
+        FloorPlan floorPlan = null;
+        List<Integer> widths = new ArrayList<>();
+        List<Integer> heights = new ArrayList<>();
 
-        do {
+        User user = User.login();
+
+        String[] roomsSize = user.roomsAndSizeCode.split("_");
+        numRooms = Integer.parseInt(roomsSize[0]);
+        for (int i = 1; i < roomsSize.length; i++) {
+            int s = Integer.parseInt(roomsSize[i]);
+            if (i % 2 == 0) heights.add(s);
+            else widths.add(s);
+
+        }
+
+
+
+
+       /* do {
             System.out.print("1, 2, or 3 rooms? ");
             numRooms = new Scanner(System.in).nextInt();
         } while (!(numRooms == 1 || numRooms == 2 || numRooms == 3));
 
-        FloorPlan floorPlan = null;
-        List<Integer> widths = new ArrayList<>();
-        List<Integer> heights = new ArrayList<>();
+
 
         int currentWidth = 0, currentHeight = 0;
 
@@ -38,7 +53,7 @@ public class Main {
 
             heights.add(currentHeight);
             currentHeight = 0;
-        }
+        }*/
 
 
         if (numRooms == 1) {
@@ -64,8 +79,8 @@ public class Main {
 
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(floorPlan, startingLocation);
-        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
-        Logger logger = new Logger(aw.username);
+        //User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
+        Logger logger = new Logger(user.username);
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, floorPlan.floorLayout.get(0).get(0), floorPlan.floorLayout.get(0).get(0), logger);
 
         System.out.print("Seconds until start? ");
