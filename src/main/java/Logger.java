@@ -3,12 +3,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
-    private File file;
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    String date = format.format(new Date());
+    public File file;
+
 
     public Logger(String username){
-        file = new File("CleanSweepGroup3/data/"+username+"CleanSweepLog.txt");
+        file = new File("CleanSweepGroup3/data/" + username + "CleanSweepLog.txt");
 
         try{
             FileWriter fileWriter = new FileWriter(file, true);
@@ -19,7 +18,7 @@ public class Logger {
         }
     }
 
-    private void log(String message){
+    public void log(String message){
         try{
             //FileWriter fileWriter = new FileWriter(file, true);
             //fileWriter.write(message+"\n");
@@ -35,36 +34,45 @@ public class Logger {
         }
     }
 
+    public String generateDateTime(){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = format.format(new Date());
+        return date;
+    }
+
     public void logStartTime(){
-        log("Clean Sweep has started cleaning at " + date);
+        generateDateTime();
+
+        log("Clean Sweep has started cleaning at " + generateDateTime() + "\n\n");
     }
 
     public void logEndTime(){
-        log("Clean Sweep finished cleaning at " + date + "\n\n");
+
+        log("Clean Sweep finished cleaning at " + generateDateTime() + "\n\n");
     }
 
     public void logMoveNorth(){
-        log("Clean Sweep moved North at "+ date);
+        log("Clean Sweep moved North at "+ generateDateTime());
     }
 
     public void logMoveSouth(){
-        log("Clean Sweep moved South at "+ date);
+        log("Clean Sweep moved South at "+ generateDateTime());
     }
 
     public void logMoveWest(){
-        log("Clean Sweep moved West at "+ date);
+        log("Clean Sweep moved West at "+ generateDateTime());
     }
 
     public void logMoveEast(){
-        log("Clean Sweep moved East at "+ date);
+        log("Clean Sweep moved East at "+ generateDateTime());
     }
 
     public void logAtCapacity(){
-        log("Clean Sweep is at dirt capacity "+ date);
+        log("Clean Sweep is at dirt capacity "+ generateDateTime());
     }
 
     public void logCurrentCapacity(double currCapacity, double totalCapacity){
-        log("Clean Sweep's collected dirt level is: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full at "+ date);
+        log("Clean Sweep's collected dirt level is: " + String.format("%.1f", (currCapacity / totalCapacity) * 100) + "% full at "+ generateDateTime());
     }
 
     public void logReturnToCharger(){
@@ -72,11 +80,11 @@ public class Logger {
     }
 
     public void logCharging(){
-        log("Clean Sweep is charging... at "+ date);
+        log("Clean Sweep is charging... at "+ generateDateTime());
     }
 
     public void logLowBattery(){
-        log("Clean Sweep battery is low at "+ date);
+        log("Clean Sweep battery is low at "+ generateDateTime());
     }
 
     public void logCurrentLocation(Location location){
@@ -104,7 +112,7 @@ public class Logger {
     }
 
     public void logBinHasBeenEmptied(){
-        log("Clean Sweep's bin has been emptied! Clean Sweep is ready to continue cleaning. "+ date);
+        log("Clean Sweep's bin has been emptied! Clean Sweep is ready to continue cleaning. "+ generateDateTime());
     }
 
     public void logCleaningOutput(FloorCell floorCell){
