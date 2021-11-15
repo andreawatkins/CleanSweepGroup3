@@ -104,7 +104,7 @@ public class User{
                 String csID = new Scanner(System.in).next();
                 System.out.print("1, 2, or 3 rooms? ");
                 String rooms = new Scanner(System.in).next();
-                StringBuilder rooms_sizes = new StringBuilder(" " + rooms);
+                StringBuilder rooms_sizes = new StringBuilder(rooms);
                 for (int i = 0; i < Integer.parseInt(rooms); ++i) {
                     System.out.println(String.format("\nRoom %d", i + 1));
                     System.out.print("   Width? ");

@@ -15,7 +15,7 @@ public class Main {
         User user = User.login();
 
         String[] roomsSize = user.roomsAndSizeCode.split("_");
-        numRooms = Integer.parseInt(roomsSize[1]);
+        numRooms = Integer.parseInt(roomsSize[0]);
         for (int i = 1; i < roomsSize.length; i++) {
             int s = Integer.parseInt(roomsSize[i]);
             if (i % 2 == 0) heights.add(s);
