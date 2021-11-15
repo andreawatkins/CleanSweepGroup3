@@ -10,7 +10,7 @@ public class CleanSweepTest {
         FloorPlan oneRoom = FloorPlan.oneRoomFloorPlan(2, 2);
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(oneRoom, startingLocation);
-        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
+        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213", "123");
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
         cs.run();
         Assertions.assertSame(cs.currentState, State.ON);
@@ -21,7 +21,7 @@ public class CleanSweepTest {
         FloorPlan oneRoom = FloorPlan.oneRoomFloorPlan(2, 2);
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(oneRoom, startingLocation);
-        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
+        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213","123");
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
         double initBattery = cs.battery;
         cs.run();
@@ -33,7 +33,7 @@ public class CleanSweepTest {
         FloorPlan oneRoom = FloorPlan.oneRoomFloorPlan(2, 2);
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(oneRoom, startingLocation);
-        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
+        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213","123");
         CleanSweep cs = new CleanSweep(50.2, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
         cs.run();
         Assertions.assertEquals(State.CHARGING, cs.currentState);
@@ -45,7 +45,7 @@ public class CleanSweepTest {
         FloorPlan oneRoom = FloorPlan.oneRoomFloorPlan(2, 2);
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(oneRoom, startingLocation);
-        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
+        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213","123");
         CleanSweep cs = new CleanSweep(250.0, 0, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
         double initCapacity = cs.currCapacity;
         cs.run();
@@ -65,7 +65,7 @@ public class CleanSweepTest {
         FloorPlan oneRoom = FloorPlan.oneRoomFloorPlan(2, 2);
         Location startingLocation = new Location(0, 0);
         SensorSimulator sensor = new SensorSimulator(oneRoom, startingLocation);
-        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213");
+        User aw = new User("awatkins", "Andrea", "Watkins", "60622", "672213","123");
         CleanSweep cs = new CleanSweep(250.0, 49, sensor, oneRoom.floorLayout.get(0).get(0), oneRoom.floorLayout.get(0).get(0));
         cs.run();
         Assertions.assertSame(cs.currentState, State.AT_CAPACITY);
